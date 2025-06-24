@@ -152,15 +152,18 @@ backend:
 
   - task: "Gym Routine Data API"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented 7-day workout routine with predefined exercises for each day. Days 1,2,4,5 are active workout days, others are rest/recovery days. Each day has specific exercises and activity status."
+        - working: true
+          agent: "testing"
+          comment: "Successfully tested gym routine data API. GET /api/workout returns all 7 days of workout data, and GET /api/workout/{day} returns the correct data for each specific day. Days 1, 2, 4, and 5 are correctly marked as active workout days, while days 3, 6, and 7 are rest days. Each day has the appropriate exercises listed."
 
 frontend:
   - task: "Mobile-First Habit Tracking UI"
