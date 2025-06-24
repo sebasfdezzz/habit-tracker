@@ -122,15 +122,18 @@ backend:
 
   - task: "Image Upload for Gym Photos"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented base64 image upload handling for gym proof photos. Photos are stored as base64 strings in MongoDB and returned in API responses."
+        - working: true
+          agent: "testing"
+          comment: "Successfully tested image upload functionality. PATCH /api/habits/{date} correctly handles the gym_photo field with base64 data. Images are properly stored in MongoDB and retrieved in subsequent API calls."
 
   - task: "Weekly Progress Tracking"
     implemented: true
