@@ -1,38 +1,179 @@
-.App {
-    text-align: center;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom animations */
+@keyframes bounce-in {
+  0% { 
+    transform: scale(0.3) rotate(-10deg); 
+    opacity: 0; 
+  }
+  50% { 
+    transform: scale(1.05) rotate(2deg); 
+  }
+  70% { 
+    transform: scale(0.9) rotate(-1deg); 
+  }
+  100% { 
+    transform: scale(1) rotate(0deg); 
+    opacity: 1; 
+  }
 }
 
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(168, 85, 247, 0.8);
+  }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+/* Custom utility classes */
+.animate-bounce-in {
+  animation: bounce-in 0.6s ease-out;
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
 }
 
-.App-link {
-    color: #61dafb;
+/* Smooth transitions for all interactive elements */
+* {
+  transition: all 0.2s ease-in-out;
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #ec4899, #8b5cf6);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #db2777, #7c3aed);
+}
+
+/* Hide default file input styling */
+input[type="file"]::-webkit-file-upload-button {
+  visibility: hidden;
+}
+
+/* Focus states for accessibility */
+button:focus,
+input:focus,
+label:focus {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+/* Responsive image handling */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Loading animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Gradient text effect */
+.gradient-text {
+  background: linear-gradient(45deg, #ec4899, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile-first responsive utilities */
+@media (max-width: 640px) {
+  .mobile-padding {
+    padding: 1rem;
+  }
+  
+  .mobile-text-sm {
+    font-size: 0.875rem;
+  }
+}
+
+/* Success celebration styles */
+.celebration-card {
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  animation: bounce-in 0.8s ease-out;
+}
+
+/* Progress bar animation */
+.progress-bar {
+  transition: width 1s ease-in-out;
+}
+
+/* Workout day selector active state */
+.workout-day-active {
+  background: linear-gradient(45deg, #8b5cf6, #ec4899);
+  color: white;
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+/* Photo upload zone */
+.photo-upload-zone {
+  border: 2px dashed #d1d5db;
+  transition: all 0.3s ease;
+}
+
+.photo-upload-zone:hover {
+  border-color: #8b5cf6;
+  background-color: #f3f4f6;
+}
+
+.photo-upload-zone.active {
+  border-color: #10b981;
+  background-color: #ecfdf5;
+}
+
+/* Habit completion animation */
+.habit-completed {
+  animation: bounce-in 0.5s ease-out;
+  background: linear-gradient(45deg, #10b981, #059669);
+}
+
+/* Weekly rewards styling */
+.reward-badge {
+  background: linear-gradient(45deg, #fbbf24, #f59e0b);
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Custom emoji sizing */
+.emoji-large {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.emoji-medium {
+  font-size: 1.5rem;
+  line-height: 1;
 }
