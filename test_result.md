@@ -137,15 +137,18 @@ backend:
 
   - task: "Weekly Progress Tracking"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented weekly progress calculation with reward system. Tracks completed days, calculates percentage, and returns unlocked rewards based on progress thresholds."
+        - working: true
+          agent: "testing"
+          comment: "Successfully tested weekly progress tracking. GET /api/progress/weekly correctly calculates the progress percentage based on completed days. The reward system works as expected, unlocking rewards at 25%, 50%, 75%, and 100% completion thresholds."
 
   - task: "Gym Routine Data API"
     implemented: true
