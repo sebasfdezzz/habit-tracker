@@ -26,8 +26,8 @@ def test_api_health():
         return False
 
 def test_daily_habit_tracking():
-    """Test CRUD operations for daily habits."""
-    print("\n🔍 Testing Daily Habit Tracking API...")
+    """Test CRUD operations for daily habits with enhanced eating_completed flag."""
+    print("\n🔍 Testing Enhanced Daily Habit Tracking API...")
     success = True
     
     # Test GET for today's date (should return default values if no entry exists)
@@ -78,15 +78,55 @@ def test_daily_habit_tracking():
         else:
             print("  ❌ completed_all flag incorrect")
             success = False
+            
+        # Verify eating_completed is calculated correctly (should be False since dinner is False)
+        if result["eating_completed"] == False:
+            print("  ✅ eating_completed flag calculated correctly (False)")
+        else:
+            print("  ❌ eating_completed flag incorrect")
+            success = False
     else:
         print(f"  ❌ Failed to create habit with status code {response.status_code}")
         print(f"  Response: {response.text}")
         success = False
     
-    # Test PATCH to update specific fields
-    print(f"\n  Testing PATCH /api/habits/{TODAY}...")
+    # Test PATCH to update dinner to True (should make eating_completed True)
+    print(f"\n  Testing PATCH /api/habits/{TODAY} to complete eating...")
     update_data = {
-        "dinner": True,
+        "dinner": True
+    }
+    
+    response = requests.patch(
+        f"{BACKEND_URL}/habits/{TODAY}",
+        json=update_data
+    )
+    
+    if response.status_code == 200:
+        print(f"  ✅ Successfully updated habit entry")
+        result = response.json()
+        print(f"  📊 Updated habit data: {result}")
+        
+        # Verify eating_completed is now True (breakfast, lunch, dinner all True)
+        if result["eating_completed"] == True:
+            print("  ✅ eating_completed flag calculated correctly (True)")
+        else:
+            print("  ❌ eating_completed flag incorrect")
+            success = False
+            
+        # Verify completed_all is still False (gym is False)
+        if result["completed_all"] == False:
+            print("  ✅ completed_all flag calculated correctly (False)")
+        else:
+            print("  ❌ completed_all flag incorrect")
+            success = False
+    else:
+        print(f"  ❌ Failed to update habit with status code {response.status_code}")
+        print(f"  Response: {response.text}")
+        success = False
+    
+    # Test PATCH to update gym to True (should make completed_all True)
+    print(f"\n  Testing PATCH /api/habits/{TODAY} to complete all habits...")
+    update_data = {
         "gym": True
     }
     
@@ -116,6 +156,47 @@ def test_daily_habit_tracking():
         else:
             print("  ❌ completed_all flag incorrect")
             success = False
+            
+        # Verify eating_completed is still True
+        if result["eating_completed"] == True:
+            print("  ✅ eating_completed flag still True")
+        else:
+            print("  ❌ eating_completed flag incorrect")
+            success = False
+    else:
+        print(f"  ❌ Failed to update habit with status code {response.status_code}")
+        print(f"  Response: {response.text}")
+        success = False
+    
+    # Test PATCH to set breakfast to False (should make eating_completed False)
+    print(f"\n  Testing PATCH /api/habits/{TODAY} to make eating incomplete...")
+    update_data = {
+        "breakfast": False
+    }
+    
+    response = requests.patch(
+        f"{BACKEND_URL}/habits/{TODAY}",
+        json=update_data
+    )
+    
+    if response.status_code == 200:
+        print(f"  ✅ Successfully updated habit entry")
+        result = response.json()
+        print(f"  📊 Updated habit data: {result}")
+        
+        # Verify eating_completed is now False
+        if result["eating_completed"] == False:
+            print("  ✅ eating_completed flag calculated correctly (False)")
+        else:
+            print("  ❌ eating_completed flag incorrect")
+            success = False
+            
+        # Verify completed_all is now False
+        if result["completed_all"] == False:
+            print("  ✅ completed_all flag calculated correctly (False)")
+        else:
+            print("  ❌ completed_all flag incorrect")
+            success = False
     else:
         print(f"  ❌ Failed to update habit with status code {response.status_code}")
         print(f"  Response: {response.text}")
@@ -131,11 +212,12 @@ def test_daily_habit_tracking():
         print(f"  📊 Retrieved habit data: {result}")
         
         # Verify all fields are set correctly
-        if (result["breakfast"] == True and 
+        if (result["breakfast"] == False and 
             result["lunch"] == True and
             result["dinner"] == True and
             result["gym"] == True and
-            result["completed_all"] == True):
+            result["completed_all"] == False and
+            result["eating_completed"] == False):
             print("  ✅ Data persisted correctly")
         else:
             print("  ❌ Data persistence issue")
