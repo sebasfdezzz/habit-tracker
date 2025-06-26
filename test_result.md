@@ -102,71 +102,59 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Create a cute and fun mobile-first website for my girlfriend to track her daily habits. The site should let her check off whether she had breakfast, lunch, dinner, and if she went to the gym. For the gym, she should also be able to upload a photo as proof. The site should feature a visual reward system: confetti effects when she completes all tasks in a day, and a progress bar that unlocks fun rewards weekly and monthly. Include a 'Gym Routine' section with a 7-day selector at the top—highlight days 1, 2, 4, and 5—with each showing that day's specific workout. No login required; progress is saved in the backend for admin view only. The overall style should be playful, colorful, and engaging."
+user_problem_statement: "Create a cute and fun mobile-first website for my girlfriend to track her daily habits. ENHANCED: Add a menu with 'Soy Mich' (habit tracker with separate eating/gym progress bars, monthly progress, roadmap to rewards, streak counter) and 'Soy Sebas' (admin calendar view with progress stats). Weekly progress requires gym only 4 times a week, eating progress bar tracks 7 days."
 
 backend:
-  - task: "Daily Habit Tracking API"
+  - task: "Enhanced Daily Habit Tracking API"
     implemented: true
-    working: true
+    working: "NA"
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "NA"
           agent: "main"
-          comment: "Implemented complete backend with MongoDB models for daily habits (breakfast, lunch, dinner, gym), image upload support (base64), CRUD endpoints for habit tracking, weekly progress calculation, and workout routine data. Uses proper UUID instead of ObjectID for JSON serialization."
-        - working: true
-          agent: "testing"
-          comment: "Successfully tested all CRUD operations for daily habits. GET /api/habits/{date} returns correct data, POST /api/habits creates new entries, and PATCH /api/habits/{date} updates specific fields. The completed_all flag is correctly calculated based on all habits being completed. Data persistence is working properly."
+          comment: "Enhanced backend with separate eating vs gym progress calculations, monthly progress tracking, streak calculation, calendar view endpoints. Added eating_completed flag to track breakfast+lunch+dinner separately from gym."
 
-  - task: "Image Upload for Gym Photos"
+  - task: "Monthly Progress & Streak Tracking"
     implemented: true
-    working: true
+    working: "NA"
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "NA"
           agent: "main"
-          comment: "Implemented base64 image upload handling for gym proof photos. Photos are stored as base64 strings in MongoDB and returned in API responses."
-        - working: true
-          agent: "testing"
-          comment: "Successfully tested image upload functionality. PATCH /api/habits/{date} correctly handles the gym_photo field with base64 data. Images are properly stored in MongoDB and retrieved in subsequent API calls."
+          comment: "Implemented monthly progress calculation with stats, current/longest streak tracking, reward system based on monthly completion percentages."
 
-  - task: "Weekly Progress Tracking"
+  - task: "Calendar View API for Admin"
     implemented: true
-    working: true
+    working: "NA"
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "NA"
           agent: "main"
-          comment: "Implemented weekly progress calculation with reward system. Tracks completed days, calculates percentage, and returns unlocked rewards based on progress thresholds."
-        - working: true
-          agent: "testing"
-          comment: "Successfully tested weekly progress tracking. GET /api/progress/weekly correctly calculates the progress percentage based on completed days. The reward system works as expected, unlocking rewards at 25%, 50%, 75%, and 100% completion thresholds."
+          comment: "Implemented calendar endpoint to provide monthly calendar data with daily habit completion status for admin view."
 
-  - task: "Gym Routine Data API"
+  - task: "Separate Eating/Gym Progress Logic"
     implemented: true
-    working: true
+    working: "NA"
     file: "/app/backend/server.py"
     stuck_count: 0
-    priority: "medium"
-    needs_retesting: false
+    priority: "high"
+    needs_retesting: true
     status_history:
         - working: "NA"
           agent: "main"
-          comment: "Implemented 7-day workout routine with predefined exercises for each day. Days 1,2,4,5 are active workout days, others are rest/recovery days. Each day has specific exercises and activity status."
-        - working: true
-          agent: "testing"
-          comment: "Successfully tested gym routine data API. GET /api/workout returns all 7 days of workout data, and GET /api/workout/{day} returns the correct data for each specific day. Days 1, 2, 4, and 5 are correctly marked as active workout days, while days 3, 6, and 7 are rest days. Each day has the appropriate exercises listed."
+          comment: "Updated weekly progress to track eating (7 days) vs gym (4 days) separately. Eating progress tracks breakfast+lunch+dinner completion, gym progress caps at 100% after 4 days."
 
 frontend:
-  - task: "Mobile-First Habit Tracking UI"
+  - task: "Menu System with Mich/Sebas Views"
     implemented: true
     working: "NA"
     file: "/app/frontend/src/App.js"
@@ -176,9 +164,9 @@ frontend:
     status_history:
         - working: "NA"
           agent: "main"
-          comment: "Implemented beautiful mobile-first UI with gradient backgrounds, responsive design, and playful colors. Users can check off breakfast, lunch, dinner, and gym habits with interactive cards that change appearance when completed."
+          comment: "Implemented main menu with two squares - 'Soy Mich' for habit tracking and 'Soy Sebas' for admin calendar view. Beautiful gradient styling with smooth transitions."
 
-  - task: "Confetti Celebration System"
+  - task: "Enhanced Mich View with Separate Progress Bars"
     implemented: true
     working: "NA"
     file: "/app/frontend/src/App.js"
@@ -188,21 +176,9 @@ frontend:
     status_history:
         - working: "NA"
           agent: "main"
-          comment: "Implemented canvas-confetti library for celebration effects when all daily tasks are completed. Confetti triggers automatically with colorful particles and fun colors matching the app theme."
+          comment: "Enhanced habit tracker with separate eating progress bar (7 days) and gym progress bar (4 days), monthly progress display, roadmap to rewards, and streak counter visualization."
 
-  - task: "Image Upload for Gym Photos"
-    implemented: true
-    working: "NA"
-    file: "/app/frontend/src/App.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-        - working: "NA"
-          agent: "main"
-          comment: "Implemented file input with base64 conversion for gym photo uploads. Photos are displayed in the UI after upload and sent to backend as base64 strings."
-
-  - task: "Weekly Progress Visualization"
+  - task: "Monthly Progress & Roadmap Visualization"
     implemented: true
     working: "NA"
     file: "/app/frontend/src/App.js"
@@ -212,9 +188,9 @@ frontend:
     status_history:
         - working: "NA"
           agent: "main"
-          comment: "Implemented progress bar with animated width changes, reward badges display, and completion percentage. Shows weekly progress with colorful gradient styling."
+          comment: "Added monthly progress section with completion stats, progress bar, and interactive roadmap showing path to rewards at different completion percentages."
 
-  - task: "7-Day Gym Routine Selector"
+  - task: "Sebas Admin Calendar View"
     implemented: true
     working: "NA"
     file: "/app/frontend/src/App.js"
@@ -224,26 +200,39 @@ frontend:
     status_history:
         - working: "NA"
           agent: "main"
-          comment: "Implemented 7-day selector with highlighting for active days (1,2,4,5). Shows specific workout exercises for each day, with collapsible section and day-specific content loading."
+          comment: "Implemented admin calendar view with monthly navigation, color-coded daily completion status, statistics overview, legend, and recent activity feed."
+
+  - task: "Streak Counter Display"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Added streak counter display in Mich view showing current streak and longest streak with flame icon and gradient styling."
 
 metadata:
   created_by: "main_agent"
-  version: "1.0"
-  test_sequence: 0
+  version: "2.0"
+  test_sequence: 1
   run_ui: false
 
 test_plan:
   current_focus:
-    - "Daily Habit Tracking API"
-    - "Mobile-First Habit Tracking UI"
-    - "Image Upload for Gym Photos"
-    - "Confetti Celebration System"
+    - "Enhanced Daily Habit Tracking API"
+    - "Monthly Progress & Streak Tracking"
+    - "Separate Eating/Gym Progress Logic"
+    - "Menu System with Mich/Sebas Views"
+    - "Enhanced Mich View with Separate Progress Bars"
   stuck_tasks: []
   test_all: true
   test_priority: "high_first"
 
 agent_communication:
     - agent: "main"
-      message: "Initial implementation complete. Created beautiful mobile-first habit tracking app with backend API for daily habits (breakfast, lunch, dinner, gym), image upload for gym photos, weekly progress tracking with rewards, 7-day workout routine selector, and confetti celebrations. Backend uses MongoDB with proper UUID handling, frontend uses React with Tailwind CSS and canvas-confetti. All core features implemented and ready for testing. Priority testing: habit tracking, image upload, and celebration system."
+      message: "Enhanced implementation complete with personalized menu system. Added 'Soy Mich' view with separate eating/gym progress bars (7 days eating, 4 days gym), monthly progress tracking, roadmap to rewards, and streak counter. Added 'Soy Sebas' admin view with calendar visualization, monthly stats, and activity feed. Backend now calculates separate eating vs gym progress, monthly statistics, and streak tracking. Ready for testing of enhanced functionality."
     - agent: "testing"
       message: "Completed comprehensive testing of all backend API endpoints. Created and executed backend_test.py to test Daily Habit Tracking API, Image Upload for Gym Photos, Weekly Progress Tracking, and Gym Routine Data API. All tests passed successfully. The backend API is fully functional and working as expected. The API correctly handles CRUD operations for daily habits, stores and retrieves base64 images, calculates weekly progress with appropriate rewards, and provides workout routine data with correct active day marking."
