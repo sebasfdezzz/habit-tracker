@@ -88,85 +88,184 @@ class CalendarDay(BaseModel):
     completed_all: bool
     eating_completed: bool
 
+class Exercise(BaseModel):
+    name: str
+    sets: int
+    reps: int
+    description: str
+    image_placeholder: str  # URL or placeholder text
+
 class WorkoutDay(BaseModel):
     day: int
     name: str
-    exercises: List[str]
+    exercises: List[Exercise]
     is_active: bool
 
-# Workout routine data
+# Enhanced Workout routine data with detailed exercises
 WORKOUT_ROUTINE = {
     1: {
-        "name": "Upper Body Power",
+        "name": "Leg Day 1",
         "exercises": [
-            "Push-ups - 3 sets of 12",
-            "Dumbbell rows - 3 sets of 10",
-            "Shoulder press - 3 sets of 8",
-            "Bicep curls - 2 sets of 15",
-            "Tricep dips - 2 sets of 12"
+            {
+                "name": "Hip Abductor Machine",
+                "sets": 4,
+                "reps": 15,
+                "description": "Seated hip abduction targeting outer glutes",
+                "image_placeholder": "placeholder_abductor.jpg"
+            },
+            {
+                "name": "Hip Adductor Machine", 
+                "sets": 4,
+                "reps": 15,
+                "description": "Seated hip adduction targeting inner thighs",
+                "image_placeholder": "placeholder_adductor.jpg"
+            },
+            {
+                "name": "Hip Thrust",
+                "sets": 4,
+                "reps": 15,
+                "description": "Barbell hip thrust for glute activation",
+                "image_placeholder": "placeholder_hipthrust.jpg"
+            },
+            {
+                "name": "Romanian Deadlift",
+                "sets": 4,
+                "reps": 15,
+                "description": "Hamstring and glute focused deadlift variation",
+                "image_placeholder": "placeholder_rdl.jpg"
+            },
+            {
+                "name": "Goblet Squats",
+                "sets": 4,
+                "reps": 15,
+                "description": "Front-loaded squat with dumbbell or kettlebell",
+                "image_placeholder": "placeholder_goblet_squat.jpg"
+            }
         ],
         "is_active": True
     },
     2: {
-        "name": "Lower Body Blast",
+        "name": "Pull",
         "exercises": [
-            "Squats - 4 sets of 15",
-            "Lunges - 3 sets of 12 each leg",
-            "Glute bridges - 3 sets of 15",
-            "Calf raises - 3 sets of 20",
-            "Wall sit - 3 sets of 30 seconds"
+            {
+                "name": "Lat Pulldown",
+                "sets": 4,
+                "reps": 15,
+                "description": "Wide grip lat pulldown for back width",
+                "image_placeholder": "placeholder_lat_pulldown.jpg"
+            },
+            {
+                "name": "Seated Cable Row",
+                "sets": 4,
+                "reps": 15,
+                "description": "Seated pulley row for mid-back thickness",
+                "image_placeholder": "placeholder_cable_row.jpg"
+            },
+            {
+                "name": "Single-Arm Dumbbell Row",
+                "sets": 4,
+                "reps": 15,
+                "description": "Unilateral dumbbell row for back and lats",
+                "image_placeholder": "placeholder_db_row.jpg"
+            },
+            {
+                "name": "Hammer Curls",
+                "sets": 4,
+                "reps": 15,
+                "description": "Neutral grip bicep curls",
+                "image_placeholder": "placeholder_hammer_curls.jpg"
+            },
+            {
+                "name": "Lying Bicep Curls",
+                "sets": 4,
+                "reps": 15,
+                "description": "Supine bicep curls for peak contraction",
+                "image_placeholder": "placeholder_lying_curls.jpg"
+            }
         ],
         "is_active": True
     },
     3: {
-        "name": "Rest Day",
+        "name": "Leg Day 2",
         "exercises": [
-            "Light stretching",
-            "10-minute walk",
-            "Deep breathing exercises"
+            {
+                "name": "Wall Sit (Isometric Squat)",
+                "sets": 4,
+                "reps": "45 sec",
+                "description": "Isometric squat hold against wall",
+                "image_placeholder": "placeholder_wall_sit.jpg"
+            },
+            {
+                "name": "Bulgarian Split Squats",
+                "sets": 4,
+                "reps": 15,
+                "description": "Single leg squat with rear foot elevated",
+                "image_placeholder": "placeholder_bulgarian_squat.jpg"
+            },
+            {
+                "name": "Donkey Kicks",
+                "sets": 4,
+                "reps": 15,
+                "description": "Quadruped hip extension for glutes",
+                "image_placeholder": "placeholder_donkey_kicks.jpg"
+            },
+            {
+                "name": "Lateral Donkey Kicks",
+                "sets": 4,
+                "reps": 15,
+                "description": "Side-lying hip abduction kicks",
+                "image_placeholder": "placeholder_lateral_kicks.jpg"
+            },
+            {
+                "name": "Standing Calf Raises",
+                "sets": 4,
+                "reps": 20,
+                "description": "Standing calf raises for gastrocnemius",
+                "image_placeholder": "placeholder_calf_raises.jpg"
+            }
         ],
-        "is_active": False
+        "is_active": True
     },
     4: {
-        "name": "Core & Cardio",
+        "name": "Push",
         "exercises": [
-            "Plank - 3 sets of 45 seconds",
-            "Mountain climbers - 3 sets of 20",
-            "Russian twists - 3 sets of 15",
-            "Burpees - 2 sets of 8",
-            "Jumping jacks - 3 sets of 30"
+            {
+                "name": "Military Press",
+                "sets": 4,
+                "reps": 15,
+                "description": "Standing overhead press for shoulders",
+                "image_placeholder": "placeholder_military_press.jpg"
+            },
+            {
+                "name": "Lateral Raises",
+                "sets": 4,
+                "reps": 15,
+                "description": "Dumbbell side raises for medial deltoids",
+                "image_placeholder": "placeholder_lateral_raises.jpg"
+            },
+            {
+                "name": "Bench Dips",
+                "sets": 4,
+                "reps": 15,
+                "description": "Tricep dips using bench or chair",
+                "image_placeholder": "placeholder_bench_dips.jpg"
+            },
+            {
+                "name": "Cable Rope Pushdown",
+                "sets": 4,
+                "reps": 15,
+                "description": "Tricep pushdown with rope attachment",
+                "image_placeholder": "placeholder_rope_pushdown.jpg"
+            },
+            {
+                "name": "Push-ups",
+                "sets": 4,
+                "reps": 15,
+                "description": "Standard push-ups for chest and triceps",
+                "image_placeholder": "placeholder_pushups.jpg"
+            }
         ],
         "is_active": True
-    },
-    5: {
-        "name": "Full Body Flow",
-        "exercises": [
-            "Deadlifts - 3 sets of 10",
-            "Push-up to T - 3 sets of 8",
-            "Squat to press - 3 sets of 12",
-            "Plank to downward dog - 2 sets of 10",
-            "Cool down stretch - 10 minutes"
-        ],
-        "is_active": True
-    },
-    6: {
-        "name": "Active Recovery",
-        "exercises": [
-            "Yoga flow - 20 minutes",
-            "Light walking",
-            "Foam rolling",
-            "Meditation - 10 minutes"
-        ],
-        "is_active": False
-    },
-    7: {
-        "name": "Rest Day",
-        "exercises": [
-            "Complete rest",
-            "Gentle stretching if needed",
-            "Prepare for next week"
-        ],
-        "is_active": False
     }
 }
 
@@ -467,16 +566,18 @@ async def get_calendar_data(year: int, month: int):
 
 @api_router.get("/workout/{day}", response_model=WorkoutDay)
 async def get_workout(day: int):
-    """Get workout for a specific day (1-7)"""
+    """Get workout for a specific day (1-4)"""
     try:
         if day not in WORKOUT_ROUTINE:
             raise HTTPException(status_code=404, detail="Invalid day")
         
         workout = WORKOUT_ROUTINE[day]
+        exercises = [Exercise(**exercise) for exercise in workout["exercises"]]
+        
         return WorkoutDay(
             day=day,
             name=workout["name"],
-            exercises=workout["exercises"],
+            exercises=exercises,
             is_active=workout["is_active"]
         )
     except Exception as e:
@@ -484,15 +585,16 @@ async def get_workout(day: int):
 
 @api_router.get("/workout")
 async def get_all_workouts():
-    """Get all workout days"""
+    """Get all workout days (1-4)"""
     try:
         workouts = []
-        for day in range(1, 8):
+        for day in range(1, 5):  # Only 4 workout days now
             workout = WORKOUT_ROUTINE[day]
+            exercises = [Exercise(**exercise) for exercise in workout["exercises"]]
             workouts.append(WorkoutDay(
                 day=day,
                 name=workout["name"],
-                exercises=workout["exercises"],
+                exercises=exercises,
                 is_active=workout["is_active"]
             ))
         return workouts

@@ -2,10 +2,181 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 import axios from "axios";
 import confetti from "canvas-confetti";
-import { Heart, Camera, CheckCircle, Circle, Trophy, Star, Flame, Crown, Calendar, Target, TrendingUp, Award } from "lucide-react";
+import { Heart, Camera, CheckCircle, Circle, Trophy, Star, Flame, Crown, Calendar, Target, TrendingUp, Award, Activity, X, Play } from "lucide-react";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+
+// Exercise Detail Modal Component
+const ExerciseModal = ({ exercise, isOpen, onClose }) => {
+  if (!isOpen || !exercise) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-3xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-bold text-gray-800">{exercise.name}</h3>
+          <button 
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+        
+        {/* Placeholder Image */}
+        <div className="bg-gray-200 h-48 rounded-xl mb-4 flex items-center justify-center">
+          <div className="text-center text-gray-500">
+            <Play className="w-12 h-12 mx-auto mb-2" />
+            <p className="text-sm">Exercise Demo</p>
+            <p className="text-xs">(Coming Soon)</p>
+          </div>
+        </div>
+        
+        {/* Exercise Details */}
+        <div className="space-y-3">
+          <div className="bg-purple-50 p-4 rounded-xl">
+            <h4 className="font-semibold text-purple-800 mb-2">Sets & Reps</h4>
+            <p className="text-purple-700">
+              {exercise.sets} sets × {exercise.reps} reps
+            </p>
+          </div>
+          
+          <div className="bg-blue-50 p-4 rounded-xl">
+            <h4 className="font-semibold text-blue-800 mb-2">Description</h4>
+            <p className="text-blue-700">{exercise.description}</p>
+          </div>
+        </div>
+        
+        <button
+          onClick={onClose}
+          className="w-full mt-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:from-purple-600 hover:to-pink-600 transition-all"
+        >
+          Got it!
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Gym Routine Component
+const GymRoutineView = () => {
+  const [workouts, setWorkouts] = useState([]);
+  const [selectedWorkoutDay, setSelectedWorkoutDay] = useState(1);
+  const [currentWorkout, setCurrentWorkout] = useState(null);
+  const [selectedExercise, setSelectedExercise] = useState(null);
+  const [showExerciseModal, setShowExerciseModal] = useState(false);
+
+  const loadWorkouts = async () => {
+    try {
+      const response = await axios.get(`${API}/workout`);
+      setWorkouts(response.data);
+      
+      // Load first workout by default
+      if (response.data.length > 0) {
+        setCurrentWorkout(response.data[0]);
+      }
+    } catch (error) {
+      console.error("Error loading workouts:", error);
+    }
+  };
+
+  const loadWorkout = async (day) => {
+    try {
+      const response = await axios.get(`${API}/workout/${day}`);
+      setCurrentWorkout(response.data);
+      setSelectedWorkoutDay(day);
+    } catch (error) {
+      console.error("Error loading workout:", error);
+    }
+  };
+
+  const handleExerciseClick = (exercise) => {
+    setSelectedExercise(exercise);
+    setShowExerciseModal(true);
+  };
+
+  useEffect(() => {
+    loadWorkouts();
+  }, []);
+
+  const workoutDays = [
+    { day: 1, name: "Leg Day 1", color: "from-green-500 to-emerald-600" },
+    { day: 2, name: "Pull", color: "from-blue-500 to-indigo-600" },
+    { day: 3, name: "Leg Day 2", color: "from-green-500 to-emerald-600" },
+    { day: 4, name: "Push", color: "from-red-500 to-pink-600" }
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div className="text-center">
+        <h3 className="text-xl font-bold text-gray-800 mb-2">Workout Routine</h3>
+        <p className="text-gray-600">4-day split program</p>
+      </div>
+
+      {/* 4-Day Selector */}
+      <div className="grid grid-cols-2 gap-3">
+        {workoutDays.map(({ day, name, color }) => {
+          const isSelected = selectedWorkoutDay === day;
+          
+          return (
+            <button
+              key={day}
+              onClick={() => loadWorkout(day)}
+              className={`p-4 rounded-xl text-white font-semibold transition-all ${
+                isSelected
+                  ? `bg-gradient-to-r ${color} transform scale-105 shadow-lg`
+                  : 'bg-gray-400 hover:bg-gray-500'
+              }`}
+            >
+              <div className="text-center">
+                <div className="text-lg font-bold">Day {day}</div>
+                <div className="text-sm opacity-90">{name}</div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Current Workout */}
+      {currentWorkout && (
+        <div className="bg-white p-6 rounded-2xl shadow-md">
+          <h4 className="font-bold text-gray-800 mb-4 text-center text-lg">
+            {currentWorkout.name}
+          </h4>
+          
+          <div className="space-y-3">
+            {currentWorkout.exercises.map((exercise, index) => (
+              <button
+                key={index}
+                onClick={() => handleExerciseClick(exercise)}
+                className="w-full flex items-center p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
+              >
+                <span className="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm font-bold mr-4">
+                  {index + 1}
+                </span>
+                <div className="flex-1 text-left">
+                  <div className="font-semibold text-gray-800">{exercise.name}</div>
+                  <div className="text-sm text-gray-600">
+                    {exercise.sets} sets × {exercise.reps} reps
+                  </div>
+                </div>
+                <Play className="w-5 h-5 text-gray-400" />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Exercise Modal */}
+      <ExerciseModal
+        exercise={selectedExercise}
+        isOpen={showExerciseModal}
+        onClose={() => setShowExerciseModal(false)}
+      />
+    </div>
+  );
+};
 
 // Main Menu Component
 const MainMenu = ({ onSelectView }) => {
@@ -58,11 +229,8 @@ const MichView = ({ onBack }) => {
   const [weeklyProgress, setWeeklyProgress] = useState(null);
   const [monthlyProgress, setMonthlyProgress] = useState(null);
   const [streakInfo, setStreakInfo] = useState(null);
-  const [workouts, setWorkouts] = useState([]);
-  const [selectedWorkoutDay, setSelectedWorkoutDay] = useState(1);
-  const [currentWorkout, setCurrentWorkout] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [showWorkouts, setShowWorkouts] = useState(false);
+  const [activeTab, setActiveTab] = useState('tracker'); // 'tracker' or 'routine'
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -118,18 +286,6 @@ const MichView = ({ onBack }) => {
     }
   };
 
-  const loadWorkouts = async () => {
-    try {
-      const response = await axios.get(`${API}/workout`);
-      setWorkouts(response.data);
-      
-      const firstWorkout = await axios.get(`${API}/workout/1`);
-      setCurrentWorkout(firstWorkout.data);
-    } catch (error) {
-      console.error("Error loading workouts:", error);
-    }
-  };
-
   // Update habit
   const updateHabit = async (habitType, value, photo = null) => {
     setLoading(true);
@@ -172,23 +328,11 @@ const MichView = ({ onBack }) => {
     }
   };
 
-  // Load workout for specific day
-  const loadWorkout = async (day) => {
-    try {
-      const response = await axios.get(`${API}/workout/${day}`);
-      setCurrentWorkout(response.data);
-      setSelectedWorkoutDay(day);
-    } catch (error) {
-      console.error("Error loading workout:", error);
-    }
-  };
-
   useEffect(() => {
     loadTodayHabits();
     loadWeeklyProgress();
     loadMonthlyProgress();
     loadStreakInfo();
-    loadWorkouts();
   }, []);
 
   const allCompleted = todayHabits.breakfast && todayHabits.lunch && todayHabits.dinner && todayHabits.gym;
@@ -213,379 +357,345 @@ const MichView = ({ onBack }) => {
         <p className="text-center text-pink-100 mt-2">Track your daily routine with love!</p>
       </div>
 
-      {/* Main Content */}
-      <div className="p-4 space-y-6">
-        
-        {/* Today's Date */}
-        <div className="text-center">
-          <h2 className="text-lg font-semibold text-gray-700">
-            {new Date().toLocaleDateString('en-US', { 
-              weekday: 'long', 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })}
-          </h2>
-        </div>
-
-        {/* Streak Info */}
-        {streakInfo && (
-          <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-4 rounded-2xl text-center shadow-md">
-            <div className="flex items-center justify-center mb-2">
-              <Flame className="w-6 h-6 mr-2" />
-              <span className="text-lg font-bold">Streak: {streakInfo.current_streak} days</span>
-            </div>
-            <p className="text-sm text-yellow-100">
-              Longest streak: {streakInfo.longest_streak} days
-            </p>
-          </div>
-        )}
-
-        {/* Habits Grid */}
-        <div className="grid grid-cols-1 gap-4">
-          
-          {/* Breakfast */}
-          <div 
-            className={`p-4 rounded-2xl shadow-md transition-all duration-300 cursor-pointer ${
-              todayHabits.breakfast 
-                ? 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white transform scale-105' 
-                : 'bg-white hover:shadow-lg'
-            }`}
-            onClick={() => updateHabit('breakfast', !todayHabits.breakfast)}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <span className="text-2xl mr-3">🥐</span>
-                <span className="font-semibold">Breakfast</span>
-              </div>
-              {todayHabits.breakfast ? 
-                <CheckCircle className="w-6 h-6" /> : 
-                <Circle className="w-6 h-6 text-gray-400" />
-              }
-            </div>
-          </div>
-
-          {/* Lunch */}
-          <div 
-            className={`p-4 rounded-2xl shadow-md transition-all duration-300 cursor-pointer ${
-              todayHabits.lunch 
-                ? 'bg-gradient-to-r from-green-400 to-emerald-400 text-white transform scale-105' 
-                : 'bg-white hover:shadow-lg'
-            }`}
-            onClick={() => updateHabit('lunch', !todayHabits.lunch)}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <span className="text-2xl mr-3">🥗</span>
-                <span className="font-semibold">Lunch</span>
-              </div>
-              {todayHabits.lunch ? 
-                <CheckCircle className="w-6 h-6" /> : 
-                <Circle className="w-6 h-6 text-gray-400" />
-              }
-            </div>
-          </div>
-
-          {/* Dinner */}
-          <div 
-            className={`p-4 rounded-2xl shadow-md transition-all duration-300 cursor-pointer ${
-              todayHabits.dinner 
-                ? 'bg-gradient-to-r from-red-400 to-pink-400 text-white transform scale-105' 
-                : 'bg-white hover:shadow-lg'
-            }`}
-            onClick={() => updateHabit('dinner', !todayHabits.dinner)}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <span className="text-2xl mr-3">🍽️</span>
-                <span className="font-semibold">Dinner</span>
-              </div>
-              {todayHabits.dinner ? 
-                <CheckCircle className="w-6 h-6" /> : 
-                <Circle className="w-6 h-6 text-gray-400" />
-              }
-            </div>
-          </div>
-
-          {/* Gym */}
-          <div 
-            className={`p-4 rounded-2xl shadow-md transition-all duration-300 ${
-              todayHabits.gym 
-                ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white transform scale-105' 
-                : 'bg-white'
-            }`}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center">
-                <span className="text-2xl mr-3">💪</span>
-                <span className="font-semibold">Gym</span>
-              </div>
-              {todayHabits.gym ? 
-                <CheckCircle className="w-6 h-6" /> : 
-                <Circle className="w-6 h-6 text-gray-400" />
-              }
-            </div>
-            
-            {/* Photo Upload */}
-            <div className="mt-3">
-              <input
-                type="file"
-                id="gym-photo"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-              />
-              <label
-                htmlFor="gym-photo"
-                className={`flex items-center justify-center p-3 rounded-xl cursor-pointer transition-all ${
-                  todayHabits.gym_photo 
-                    ? 'bg-green-100 text-green-700 border-2 border-green-300' 
-                    : 'bg-gray-100 text-gray-600 border-2 border-dashed border-gray-300 hover:bg-gray-200'
-                }`}
-              >
-                <Camera className="w-5 h-5 mr-2" />
-                <span className="text-sm">
-                  {todayHabits.gym_photo ? 'Photo uploaded! ✨' : 'Upload gym photo'}
-                </span>
-              </label>
-              
-              {/* Display uploaded photo */}
-              {todayHabits.gym_photo && (
-                <div className="mt-3">
-                  <img 
-                    src={todayHabits.gym_photo} 
-                    alt="Gym proof" 
-                    className="w-full h-32 object-cover rounded-xl"
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Completion Status */}
-        {allCompleted && (
-          <div className="bg-gradient-to-r from-pink-500 to-purple-600 text-white p-6 rounded-2xl text-center shadow-lg">
-            <div className="text-4xl mb-2">🎉</div>
-            <h3 className="text-xl font-bold mb-2">Amazing Day!</h3>
-            <p>You completed all your habits today! You're incredible! 💖</p>
-          </div>
-        )}
-
-        {/* Weekly Progress */}
-        {weeklyProgress && (
-          <div className="bg-white p-6 rounded-2xl shadow-md">
-            <h3 className="text-lg font-bold mb-4 text-center text-gray-800">Weekly Progress</h3>
-            
-            {/* Eating Progress */}
-            <div className="mb-4">
-              <div className="flex justify-between text-sm text-gray-600 mb-2">
-                <span>🍽️ Eating (7 days)</span>
-                <span>{Math.round(weeklyProgress.eating_progress.percentage)}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
-                <div 
-                  className="bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${weeklyProgress.eating_progress.percentage}%` }}
-                ></div>
-              </div>
-              <p className="text-xs text-gray-600 mt-1">
-                {weeklyProgress.eating_progress.completed_days} of {weeklyProgress.eating_progress.total_days} days
-              </p>
-            </div>
-
-            {/* Gym Progress */}
-            <div className="mb-4">
-              <div className="flex justify-between text-sm text-gray-600 mb-2">
-                <span>💪 Gym (4 days)</span>
-                <span>{Math.round(weeklyProgress.gym_progress.percentage)}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
-                <div 
-                  className="bg-gradient-to-r from-purple-500 to-indigo-600 h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${weeklyProgress.gym_progress.percentage}%` }}
-                ></div>
-              </div>
-              <p className="text-xs text-gray-600 mt-1">
-                {weeklyProgress.gym_progress.completed_days} of {weeklyProgress.gym_progress.total_days} days
-              </p>
-            </div>
-
-            {/* Overall Progress */}
-            <div className="mb-4">
-              <div className="flex justify-between text-sm text-gray-600 mb-2">
-                <span>🎯 Overall</span>
-                <span>{Math.round(weeklyProgress.overall_progress)}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-4">
-                <div 
-                  className="bg-gradient-to-r from-pink-500 to-purple-600 h-4 rounded-full transition-all duration-500"
-                  style={{ width: `${weeklyProgress.overall_progress}%` }}
-                ></div>
-              </div>
-            </div>
-
-            {/* Rewards */}
-            {weeklyProgress.rewards_unlocked.length > 0 && (
-              <div>
-                <h4 className="font-semibold mb-2 text-gray-700">Rewards Unlocked:</h4>
-                <div className="flex flex-wrap gap-2">
-                  {weeklyProgress.rewards_unlocked.map((reward, index) => (
-                    <span 
-                      key={index}
-                      className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white px-3 py-1 rounded-full text-sm font-medium"
-                    >
-                      {reward}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Monthly Progress & Roadmap */}
-        {monthlyProgress && (
-          <div className="bg-white p-6 rounded-2xl shadow-md">
-            <h3 className="text-lg font-bold mb-4 text-center text-gray-800">Monthly Progress</h3>
-            
-            {/* Progress Stats */}
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600">{monthlyProgress.completed_days}</div>
-                <div className="text-sm text-gray-600">Perfect Days</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-pink-600">{Math.round(monthlyProgress.progress_percentage)}%</div>
-                <div className="text-sm text-gray-600">Monthly Goal</div>
-              </div>
-            </div>
-
-            {/* Monthly Progress Bar */}
-            <div className="mb-4">
-              <div className="w-full bg-gray-200 rounded-full h-4">
-                <div 
-                  className="bg-gradient-to-r from-pink-500 to-purple-600 h-4 rounded-full transition-all duration-500"
-                  style={{ width: `${monthlyProgress.progress_percentage}%` }}
-                ></div>
-              </div>
-            </div>
-
-            {/* Roadmap */}
-            <div className="mb-4">
-              <h4 className="font-semibold mb-3 text-gray-700 flex items-center">
-                <Target className="w-5 h-5 mr-2" />
-                Roadmap to Rewards
-              </h4>
-              <div className="space-y-2">
-                <div className={`flex items-center p-2 rounded-lg ${monthlyProgress.progress_percentage >= 20 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                  <div className="w-3 h-3 rounded-full bg-current mr-3"></div>
-                  <span className="text-sm">20% - Month Started! 🎯</span>
-                </div>
-                <div className={`flex items-center p-2 rounded-lg ${monthlyProgress.progress_percentage >= 40 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                  <div className="w-3 h-3 rounded-full bg-current mr-3"></div>
-                  <span className="text-sm">40% - Strong Month! 💪</span>
-                </div>
-                <div className={`flex items-center p-2 rounded-lg ${monthlyProgress.progress_percentage >= 60 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                  <div className="w-3 h-3 rounded-full bg-current mr-3"></div>
-                  <span className="text-sm">60% - Excellent Month! 🔥</span>
-                </div>
-                <div className={`flex items-center p-2 rounded-lg ${monthlyProgress.progress_percentage >= 80 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                  <div className="w-3 h-3 rounded-full bg-current mr-3"></div>
-                  <span className="text-sm">80% - Amazing Month! 👑</span>
-                </div>
-                <div className={`flex items-center p-2 rounded-lg ${monthlyProgress.progress_percentage >= 95 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                  <div className="w-3 h-3 rounded-full bg-current mr-3"></div>
-                  <span className="text-sm">95% - Perfect Month! 🏆</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Monthly Rewards */}
-            {monthlyProgress.rewards_unlocked.length > 0 && (
-              <div>
-                <h4 className="font-semibold mb-2 text-gray-700">Monthly Rewards:</h4>
-                <div className="flex flex-wrap gap-2">
-                  {monthlyProgress.rewards_unlocked.map((reward, index) => (
-                    <span 
-                      key={index}
-                      className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-medium"
-                    >
-                      {reward}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Gym Routine Section */}
-        <div className="bg-white p-6 rounded-2xl shadow-md">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-800">Gym Routine</h3>
+      {/* Tab Navigation */}
+      <div className="p-4">
+        <div className="bg-white rounded-2xl p-2 shadow-md mb-6">
+          <div className="grid grid-cols-2 gap-1">
             <button
-              onClick={() => setShowWorkouts(!showWorkouts)}
-              className="bg-purple-500 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-purple-600 transition-colors"
+              onClick={() => setActiveTab('tracker')}
+              className={`py-3 px-6 rounded-xl font-semibold transition-all ${
+                activeTab === 'tracker'
+                  ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
             >
-              {showWorkouts ? 'Hide' : 'Show'} Workouts
+              <Activity className="w-5 h-5 inline mr-2" />
+              Tracker
+            </button>
+            <button
+              onClick={() => setActiveTab('routine')}
+              className={`py-3 px-6 rounded-xl font-semibold transition-all ${
+                activeTab === 'routine'
+                  ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <Trophy className="w-5 h-5 inline mr-2" />
+              Gym Routine
             </button>
           </div>
+        </div>
 
-          {showWorkouts && (
-            <>
-              {/* 7-Day Selector */}
-              <div className="grid grid-cols-7 gap-2 mb-6">
-                {[1, 2, 3, 4, 5, 6, 7].map(day => {
-                  const isActive = [1, 2, 4, 5].includes(day);
-                  const isSelected = selectedWorkoutDay === day;
-                  
-                  return (
-                    <button
-                      key={day}
-                      onClick={() => loadWorkout(day)}
-                      className={`p-3 rounded-xl text-sm font-semibold transition-all ${
-                        isSelected
-                          ? 'bg-purple-600 text-white transform scale-105'
-                          : isActive
-                          ? 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                          : 'bg-gray-100 text-gray-500'
-                      }`}
-                    >
-                      Day {day}
-                    </button>
-                  );
+        {/* Tab Content */}
+        {activeTab === 'tracker' ? (
+          <div className="space-y-6">
+            {/* Today's Date */}
+            <div className="text-center">
+              <h2 className="text-lg font-semibold text-gray-700">
+                {new Date().toLocaleDateString('en-US', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
                 })}
+              </h2>
+            </div>
+
+            {/* Streak Info */}
+            {streakInfo && (
+              <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-4 rounded-2xl text-center shadow-md">
+                <div className="flex items-center justify-center mb-2">
+                  <Flame className="w-6 h-6 mr-2" />
+                  <span className="text-lg font-bold">Streak: {streakInfo.current_streak} days</span>
+                </div>
+                <p className="text-sm text-yellow-100">
+                  Longest streak: {streakInfo.longest_streak} days
+                </p>
+              </div>
+            )}
+
+            {/* Habits Grid */}
+            <div className="grid grid-cols-1 gap-4">
+              
+              {/* Breakfast */}
+              <div 
+                className={`p-4 rounded-2xl shadow-md transition-all duration-300 cursor-pointer ${
+                  todayHabits.breakfast 
+                    ? 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white transform scale-105' 
+                    : 'bg-white hover:shadow-lg'
+                }`}
+                onClick={() => updateHabit('breakfast', !todayHabits.breakfast)}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <span className="text-2xl mr-3">🥐</span>
+                    <span className="font-semibold">Breakfast</span>
+                  </div>
+                  {todayHabits.breakfast ? 
+                    <CheckCircle className="w-6 h-6" /> : 
+                    <Circle className="w-6 h-6 text-gray-400" />
+                  }
+                </div>
               </div>
 
-              {/* Current Workout */}
-              {currentWorkout && (
-                <div className="bg-purple-50 p-4 rounded-xl">
-                  <h4 className="font-bold text-purple-800 mb-3 text-center">
-                    Day {currentWorkout.day}: {currentWorkout.name}
-                  </h4>
-                  
-                  <div className="space-y-2">
-                    {currentWorkout.exercises.map((exercise, index) => (
-                      <div key={index} className="flex items-center p-2 bg-white rounded-lg">
-                        <span className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold mr-3">
-                          {index + 1}
-                        </span>
-                        <span className="text-gray-700">{exercise}</span>
-                      </div>
-                    ))}
+              {/* Lunch */}
+              <div 
+                className={`p-4 rounded-2xl shadow-md transition-all duration-300 cursor-pointer ${
+                  todayHabits.lunch 
+                    ? 'bg-gradient-to-r from-green-400 to-emerald-400 text-white transform scale-105' 
+                    : 'bg-white hover:shadow-lg'
+                }`}
+                onClick={() => updateHabit('lunch', !todayHabits.lunch)}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <span className="text-2xl mr-3">🥗</span>
+                    <span className="font-semibold">Lunch</span>
                   </div>
+                  {todayHabits.lunch ? 
+                    <CheckCircle className="w-6 h-6" /> : 
+                    <Circle className="w-6 h-6 text-gray-400" />
+                  }
+                </div>
+              </div>
+
+              {/* Dinner */}
+              <div 
+                className={`p-4 rounded-2xl shadow-md transition-all duration-300 cursor-pointer ${
+                  todayHabits.dinner 
+                    ? 'bg-gradient-to-r from-red-400 to-pink-400 text-white transform scale-105' 
+                    : 'bg-white hover:shadow-lg'
+                }`}
+                onClick={() => updateHabit('dinner', !todayHabits.dinner)}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <span className="text-2xl mr-3">🍽️</span>
+                    <span className="font-semibold">Dinner</span>
+                  </div>
+                  {todayHabits.dinner ? 
+                    <CheckCircle className="w-6 h-6" /> : 
+                    <Circle className="w-6 h-6 text-gray-400" />
+                  }
+                </div>
+              </div>
+
+              {/* Gym */}
+              <div 
+                className={`p-4 rounded-2xl shadow-md transition-all duration-300 ${
+                  todayHabits.gym 
+                    ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white transform scale-105' 
+                    : 'bg-white'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center">
+                    <span className="text-2xl mr-3">💪</span>
+                    <span className="font-semibold">Gym</span>
+                  </div>
+                  {todayHabits.gym ? 
+                    <CheckCircle className="w-6 h-6" /> : 
+                    <Circle className="w-6 h-6 text-gray-400" />
+                  }
+                </div>
+                
+                {/* Photo Upload */}
+                <div className="mt-3">
+                  <input
+                    type="file"
+                    id="gym-photo"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor="gym-photo"
+                    className={`flex items-center justify-center p-3 rounded-xl cursor-pointer transition-all ${
+                      todayHabits.gym_photo 
+                        ? 'bg-green-100 text-green-700 border-2 border-green-300' 
+                        : 'bg-gray-100 text-gray-600 border-2 border-dashed border-gray-300 hover:bg-gray-200'
+                    }`}
+                  >
+                    <Camera className="w-5 h-5 mr-2" />
+                    <span className="text-sm">
+                      {todayHabits.gym_photo ? 'Photo uploaded! ✨' : 'Upload gym photo'}
+                    </span>
+                  </label>
                   
-                  {!currentWorkout.is_active && (
-                    <div className="mt-3 p-3 bg-blue-100 rounded-lg text-center">
-                      <span className="text-blue-700 font-medium">🌙 Rest Day - Take it easy!</span>
+                  {/* Display uploaded photo */}
+                  {todayHabits.gym_photo && (
+                    <div className="mt-3">
+                      <img 
+                        src={todayHabits.gym_photo} 
+                        alt="Gym proof" 
+                        className="w-full h-32 object-cover rounded-xl"
+                      />
                     </div>
                   )}
                 </div>
-              )}
-            </>
-          )}
-        </div>
+              </div>
+            </div>
+
+            {/* Completion Status */}
+            {allCompleted && (
+              <div className="bg-gradient-to-r from-pink-500 to-purple-600 text-white p-6 rounded-2xl text-center shadow-lg">
+                <div className="text-4xl mb-2">🎉</div>
+                <h3 className="text-xl font-bold mb-2">Amazing Day!</h3>
+                <p>You completed all your habits today! You're incredible! 💖</p>
+              </div>
+            )}
+
+            {/* Weekly Progress */}
+            {weeklyProgress && (
+              <div className="bg-white p-6 rounded-2xl shadow-md">
+                <h3 className="text-lg font-bold mb-4 text-center text-gray-800">Weekly Progress</h3>
+                
+                {/* Eating Progress */}
+                <div className="mb-4">
+                  <div className="flex justify-between text-sm text-gray-600 mb-2">
+                    <span>🍽️ Eating (7 days)</span>
+                    <span>{Math.round(weeklyProgress.eating_progress.percentage)}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div 
+                      className="bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full transition-all duration-500"
+                      style={{ width: `${weeklyProgress.eating_progress.percentage}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-gray-600 mt-1">
+                    {weeklyProgress.eating_progress.completed_days} of {weeklyProgress.eating_progress.total_days} days
+                  </p>
+                </div>
+
+                {/* Gym Progress */}
+                <div className="mb-4">
+                  <div className="flex justify-between text-sm text-gray-600 mb-2">
+                    <span>💪 Gym (4 days)</span>
+                    <span>{Math.round(weeklyProgress.gym_progress.percentage)}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div 
+                      className="bg-gradient-to-r from-purple-500 to-indigo-600 h-3 rounded-full transition-all duration-500"
+                      style={{ width: `${weeklyProgress.gym_progress.percentage}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-gray-600 mt-1">
+                    {weeklyProgress.gym_progress.completed_days} of {weeklyProgress.gym_progress.total_days} days
+                  </p>
+                </div>
+
+                {/* Overall Progress */}
+                <div className="mb-4">
+                  <div className="flex justify-between text-sm text-gray-600 mb-2">
+                    <span>🎯 Overall</span>
+                    <span>{Math.round(weeklyProgress.overall_progress)}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-4">
+                    <div 
+                      className="bg-gradient-to-r from-pink-500 to-purple-600 h-4 rounded-full transition-all duration-500"
+                      style={{ width: `${weeklyProgress.overall_progress}%` }}
+                    ></div>
+                  </div>
+                </div>
+
+                {/* Rewards */}
+                {weeklyProgress.rewards_unlocked.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold mb-2 text-gray-700">Rewards Unlocked:</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {weeklyProgress.rewards_unlocked.map((reward, index) => (
+                        <span 
+                          key={index}
+                          className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white px-3 py-1 rounded-full text-sm font-medium"
+                        >
+                          {reward}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Monthly Progress & Roadmap */}
+            {monthlyProgress && (
+              <div className="bg-white p-6 rounded-2xl shadow-md">
+                <h3 className="text-lg font-bold mb-4 text-center text-gray-800">Monthly Progress</h3>
+                
+                {/* Progress Stats */}
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-purple-600">{monthlyProgress.completed_days}</div>
+                    <div className="text-sm text-gray-600">Perfect Days</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-pink-600">{Math.round(monthlyProgress.progress_percentage)}%</div>
+                    <div className="text-sm text-gray-600">Monthly Goal</div>
+                  </div>
+                </div>
+
+                {/* Monthly Progress Bar */}
+                <div className="mb-4">
+                  <div className="w-full bg-gray-200 rounded-full h-4">
+                    <div 
+                      className="bg-gradient-to-r from-pink-500 to-purple-600 h-4 rounded-full transition-all duration-500"
+                      style={{ width: `${monthlyProgress.progress_percentage}%` }}
+                    ></div>
+                  </div>
+                </div>
+
+                {/* Roadmap */}
+                <div className="mb-4">
+                  <h4 className="font-semibold mb-3 text-gray-700 flex items-center">
+                    <Target className="w-5 h-5 mr-2" />
+                    Roadmap to Rewards
+                  </h4>
+                  <div className="space-y-2">
+                    <div className={`flex items-center p-2 rounded-lg ${monthlyProgress.progress_percentage >= 20 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                      <div className="w-3 h-3 rounded-full bg-current mr-3"></div>
+                      <span className="text-sm">20% - Month Started! 🎯</span>
+                    </div>
+                    <div className={`flex items-center p-2 rounded-lg ${monthlyProgress.progress_percentage >= 40 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                      <div className="w-3 h-3 rounded-full bg-current mr-3"></div>
+                      <span className="text-sm">40% - Strong Month! 💪</span>
+                    </div>
+                    <div className={`flex items-center p-2 rounded-lg ${monthlyProgress.progress_percentage >= 60 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                      <div className="w-3 h-3 rounded-full bg-current mr-3"></div>
+                      <span className="text-sm">60% - Excellent Month! 🔥</span>
+                    </div>
+                    <div className={`flex items-center p-2 rounded-lg ${monthlyProgress.progress_percentage >= 80 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                      <div className="w-3 h-3 rounded-full bg-current mr-3"></div>
+                      <span className="text-sm">80% - Amazing Month! 👑</span>
+                    </div>
+                    <div className={`flex items-center p-2 rounded-lg ${monthlyProgress.progress_percentage >= 95 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                      <div className="w-3 h-3 rounded-full bg-current mr-3"></div>
+                      <span className="text-sm">95% - Perfect Month! 🏆</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Monthly Rewards */}
+                {monthlyProgress.rewards_unlocked.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold mb-2 text-gray-700">Monthly Rewards:</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {monthlyProgress.rewards_unlocked.map((reward, index) => (
+                        <span 
+                          key={index}
+                          className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-medium"
+                        >
+                          {reward}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          <GymRoutineView />
+        )}
       </div>
 
       {/* Loading Overlay */}
