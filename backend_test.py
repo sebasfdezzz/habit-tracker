@@ -189,8 +189,8 @@ def test_image_upload():
     return False
 
 def test_weekly_progress():
-    """Test weekly progress tracking and reward system."""
-    print("\n🔍 Testing Weekly Progress Tracking...")
+    """Test weekly progress tracking and reward system with separate eating/gym progress."""
+    print("\n🔍 Testing Weekly Progress Tracking with Separate Eating/Gym Progress...")
     
     response = requests.get(f"{BACKEND_URL}/progress/weekly")
     
@@ -200,37 +200,72 @@ def test_weekly_progress():
         print(f"  📊 Weekly progress data: {result}")
         
         # Verify the structure of the response
-        required_fields = ["week_start", "total_days", "completed_days", 
-                          "progress_percentage", "rewards_unlocked"]
+        required_fields = ["week_start", "eating_progress", "gym_progress", 
+                          "overall_progress", "rewards_unlocked"]
         
         for field in required_fields:
             if field not in result:
                 print(f"  ❌ Missing required field: {field}")
                 return False
         
+        # Verify eating_progress structure
+        eating_progress = result["eating_progress"]
+        if not all(key in eating_progress for key in ["completed_days", "total_days", "percentage"]):
+            print("  ❌ eating_progress missing required fields")
+            return False
+            
+        # Verify gym_progress structure
+        gym_progress = result["gym_progress"]
+        if not all(key in gym_progress for key in ["completed_days", "total_days", "percentage"]):
+            print("  ❌ gym_progress missing required fields")
+            return False
+            
+        # Verify eating progress is tracking 7 days
+        if eating_progress["total_days"] != 7:
+            print(f"  ❌ eating_progress should track 7 days, got {eating_progress['total_days']}")
+            return False
+            
+        # Verify gym progress is tracking 4 days
+        if gym_progress["total_days"] != 4:
+            print(f"  ❌ gym_progress should track 4 days, got {gym_progress['total_days']}")
+            return False
+            
+        # Verify gym progress percentage is capped at 100%
+        if gym_progress["completed_days"] > 4 and gym_progress["percentage"] > 100:
+            print(f"  ❌ gym_progress percentage should be capped at 100%, got {gym_progress['percentage']}%")
+            return False
+            
+        # Verify overall progress calculation (average of eating and gym progress)
+        expected_overall = (eating_progress["percentage"] + gym_progress["percentage"]) / 2
+        if abs(result["overall_progress"] - expected_overall) > 0.01:  # Allow small floating point difference
+            print(f"  ❌ overall_progress calculation incorrect. Expected: {expected_overall}, Got: {result['overall_progress']}")
+            return False
+        
         # Verify reward logic
-        percentage = result["progress_percentage"]
+        overall_progress = result["overall_progress"]
         rewards = result["rewards_unlocked"]
         
-        print(f"  📈 Progress percentage: {percentage}%")
+        print(f"  📈 Overall progress: {overall_progress}%")
+        print(f"  📊 Eating progress: {eating_progress['percentage']}% ({eating_progress['completed_days']}/{eating_progress['total_days']} days)")
+        print(f"  📊 Gym progress: {gym_progress['percentage']}% ({gym_progress['completed_days']}/{gym_progress['total_days']} days)")
         print(f"  🏆 Rewards unlocked: {rewards}")
         
         # Check if rewards match the expected rewards based on percentage
         expected_rewards = []
-        if percentage >= 25:
+        if overall_progress >= 25:
             expected_rewards.append("🌟 Getting Started!")
-        if percentage >= 50:
+        if overall_progress >= 50:
             expected_rewards.append("🔥 On Fire!")
-        if percentage >= 75:
+        if overall_progress >= 75:
             expected_rewards.append("💎 Diamond Streak!")
-        if percentage == 100:
+        if overall_progress >= 90:
             expected_rewards.append("👑 Perfect Week Queen!")
         
         if set(rewards) == set(expected_rewards):
             print("  ✅ Rewards calculated correctly")
             return True
         else:
-            print(f"  ❌ Reward mismatch. Expected: {expected_rewards}")
+            print(f"  ❌ Reward mismatch. Expected: {expected_rewards}, Got: {rewards}")
             return False
     else:
         print(f"  ❌ Failed to get weekly progress with status code {response.status_code}")
