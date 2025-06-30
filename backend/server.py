@@ -6,7 +6,7 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List, Optional, Dict
 import uuid
 from datetime import datetime, date, timedelta
 import base64
@@ -29,46 +29,41 @@ api_router = APIRouter(prefix="/api")
 
 
 # Define Models
-class DailyHabit(BaseModel):
+class ExerciseCompletion(BaseModel):
+    exercise_name: str
+    completed: bool = False
+    timestamp: Optional[datetime] = None
+
+class WorkoutSession(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     date: str  # YYYY-MM-DD format
-    breakfast: bool = False
-    lunch: bool = False
-    dinner: bool = False
-    gym: bool = False
-    gym_photo: Optional[str] = None  # base64 encoded image
-    completed_all: bool = False
-    eating_completed: bool = False  # breakfast + lunch + dinner
+    workout_day: int  # 1-4
+    workout_name: str
+    exercises: List[ExerciseCompletion] = []
+    completed: bool = False
+    completion_percentage: float = 0.0
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
-class DailyHabitCreate(BaseModel):
+class WorkoutSessionCreate(BaseModel):
     date: str
-    breakfast: Optional[bool] = False
-    lunch: Optional[bool] = False
-    dinner: Optional[bool] = False
-    gym: Optional[bool] = False
-    gym_photo: Optional[str] = None
+    workout_day: int
 
-class DailyHabitUpdate(BaseModel):
-    breakfast: Optional[bool] = None
-    lunch: Optional[bool] = None
-    dinner: Optional[bool] = None
-    gym: Optional[bool] = None
-    gym_photo: Optional[str] = None
+class ExerciseUpdate(BaseModel):
+    exercise_name: str
+    completed: bool
 
 class WeeklyProgress(BaseModel):
     week_start: str
-    eating_progress: dict  # {completed_days: int, total_days: 7, percentage: float}
-    gym_progress: dict     # {completed_days: int, total_days: 4, percentage: float}
-    overall_progress: float
+    completed_workouts: int
+    total_target: int  # 4 workouts per week
+    progress_percentage: float
+    workout_days_completed: List[int]
     rewards_unlocked: List[str]
 
 class MonthlyProgress(BaseModel):
     month: str  # YYYY-MM format
-    total_days: int
-    completed_days: int
-    eating_days: int
-    gym_days: int
+    total_workouts: int
+    completed_workouts: int
     progress_percentage: float
     current_streak: int
     longest_streak: int
@@ -77,23 +72,14 @@ class MonthlyProgress(BaseModel):
 class StreakInfo(BaseModel):
     current_streak: int
     longest_streak: int
-    last_completion_date: Optional[str]
-
-class CalendarDay(BaseModel):
-    date: str
-    breakfast: bool
-    lunch: bool
-    dinner: bool
-    gym: bool
-    completed_all: bool
-    eating_completed: bool
+    last_workout_date: Optional[str]
 
 class Exercise(BaseModel):
     name: str
     sets: int
     reps: int
     description: str
-    image_placeholder: str  # URL or placeholder text
+    video_placeholder: str  # Placeholder for upcoming video
 
 class WorkoutDay(BaseModel):
     day: int
@@ -101,7 +87,7 @@ class WorkoutDay(BaseModel):
     exercises: List[Exercise]
     is_active: bool
 
-# Enhanced Workout routine data with detailed exercises
+# Enhanced Workout routine data
 WORKOUT_ROUTINE = {
     1: {
         "name": "Leg Day 1",
@@ -111,35 +97,35 @@ WORKOUT_ROUTINE = {
                 "sets": 4,
                 "reps": 15,
                 "description": "Seated hip abduction targeting outer glutes",
-                "image_placeholder": "placeholder_abductor.jpg"
+                "video_placeholder": "Coming Soon: Hip Abductor Tutorial"
             },
             {
                 "name": "Hip Adductor Machine", 
                 "sets": 4,
                 "reps": 15,
                 "description": "Seated hip adduction targeting inner thighs",
-                "image_placeholder": "placeholder_adductor.jpg"
+                "video_placeholder": "Coming Soon: Hip Adductor Tutorial"
             },
             {
                 "name": "Hip Thrust",
                 "sets": 4,
                 "reps": 15,
                 "description": "Barbell hip thrust for glute activation",
-                "image_placeholder": "placeholder_hipthrust.jpg"
+                "video_placeholder": "Coming Soon: Hip Thrust Tutorial"
             },
             {
                 "name": "Romanian Deadlift",
                 "sets": 4,
                 "reps": 15,
                 "description": "Hamstring and glute focused deadlift variation",
-                "image_placeholder": "placeholder_rdl.jpg"
+                "video_placeholder": "Coming Soon: Romanian Deadlift Tutorial"
             },
             {
                 "name": "Goblet Squats",
                 "sets": 4,
                 "reps": 15,
                 "description": "Front-loaded squat with dumbbell or kettlebell",
-                "image_placeholder": "placeholder_goblet_squat.jpg"
+                "video_placeholder": "Coming Soon: Goblet Squat Tutorial"
             }
         ],
         "is_active": True
@@ -152,35 +138,35 @@ WORKOUT_ROUTINE = {
                 "sets": 4,
                 "reps": 15,
                 "description": "Wide grip lat pulldown for back width",
-                "image_placeholder": "placeholder_lat_pulldown.jpg"
+                "video_placeholder": "Coming Soon: Lat Pulldown Tutorial"
             },
             {
                 "name": "Seated Cable Row",
                 "sets": 4,
                 "reps": 15,
                 "description": "Seated pulley row for mid-back thickness",
-                "image_placeholder": "placeholder_cable_row.jpg"
+                "video_placeholder": "Coming Soon: Cable Row Tutorial"
             },
             {
                 "name": "Single-Arm Dumbbell Row",
                 "sets": 4,
                 "reps": 15,
                 "description": "Unilateral dumbbell row for back and lats",
-                "image_placeholder": "placeholder_db_row.jpg"
+                "video_placeholder": "Coming Soon: Dumbbell Row Tutorial"
             },
             {
                 "name": "Hammer Curls",
                 "sets": 4,
                 "reps": 15,
                 "description": "Neutral grip bicep curls",
-                "image_placeholder": "placeholder_hammer_curls.jpg"
+                "video_placeholder": "Coming Soon: Hammer Curls Tutorial"
             },
             {
                 "name": "Lying Bicep Curls",
                 "sets": 4,
                 "reps": 15,
                 "description": "Supine bicep curls for peak contraction",
-                "image_placeholder": "placeholder_lying_curls.jpg"
+                "video_placeholder": "Coming Soon: Lying Curls Tutorial"
             }
         ],
         "is_active": True
@@ -193,35 +179,35 @@ WORKOUT_ROUTINE = {
                 "sets": 4,
                 "reps": "45 sec",
                 "description": "Isometric squat hold against wall",
-                "image_placeholder": "placeholder_wall_sit.jpg"
+                "video_placeholder": "Coming Soon: Wall Sit Tutorial"
             },
             {
                 "name": "Bulgarian Split Squats",
                 "sets": 4,
                 "reps": 15,
                 "description": "Single leg squat with rear foot elevated",
-                "image_placeholder": "placeholder_bulgarian_squat.jpg"
+                "video_placeholder": "Coming Soon: Bulgarian Squat Tutorial"
             },
             {
                 "name": "Donkey Kicks",
                 "sets": 4,
                 "reps": 15,
                 "description": "Quadruped hip extension for glutes",
-                "image_placeholder": "placeholder_donkey_kicks.jpg"
+                "video_placeholder": "Coming Soon: Donkey Kicks Tutorial"
             },
             {
                 "name": "Lateral Donkey Kicks",
                 "sets": 4,
                 "reps": 15,
                 "description": "Side-lying hip abduction kicks",
-                "image_placeholder": "placeholder_lateral_kicks.jpg"
+                "video_placeholder": "Coming Soon: Lateral Kicks Tutorial"
             },
             {
                 "name": "Standing Calf Raises",
                 "sets": 4,
                 "reps": 20,
                 "description": "Standing calf raises for gastrocnemius",
-                "image_placeholder": "placeholder_calf_raises.jpg"
+                "video_placeholder": "Coming Soon: Calf Raises Tutorial"
             }
         ],
         "is_active": True
@@ -234,35 +220,35 @@ WORKOUT_ROUTINE = {
                 "sets": 4,
                 "reps": 15,
                 "description": "Standing overhead press for shoulders",
-                "image_placeholder": "placeholder_military_press.jpg"
+                "video_placeholder": "Coming Soon: Military Press Tutorial"
             },
             {
                 "name": "Lateral Raises",
                 "sets": 4,
                 "reps": 15,
                 "description": "Dumbbell side raises for medial deltoids",
-                "image_placeholder": "placeholder_lateral_raises.jpg"
+                "video_placeholder": "Coming Soon: Lateral Raises Tutorial"
             },
             {
                 "name": "Bench Dips",
                 "sets": 4,
                 "reps": 15,
                 "description": "Tricep dips using bench or chair",
-                "image_placeholder": "placeholder_bench_dips.jpg"
+                "video_placeholder": "Coming Soon: Bench Dips Tutorial"
             },
             {
                 "name": "Cable Rope Pushdown",
                 "sets": 4,
                 "reps": 15,
                 "description": "Tricep pushdown with rope attachment",
-                "image_placeholder": "placeholder_rope_pushdown.jpg"
+                "video_placeholder": "Coming Soon: Rope Pushdown Tutorial"
             },
             {
                 "name": "Push-ups",
                 "sets": 4,
                 "reps": 15,
                 "description": "Standard push-ups for chest and triceps",
-                "image_placeholder": "placeholder_pushups.jpg"
+                "video_placeholder": "Coming Soon: Push-ups Tutorial"
             }
         ],
         "is_active": True
@@ -270,149 +256,162 @@ WORKOUT_ROUTINE = {
 }
 
 # Helper functions
-def check_all_completed(habit_data):
-    return (habit_data.get('breakfast', False) and 
-            habit_data.get('lunch', False) and 
-            habit_data.get('dinner', False) and 
-            habit_data.get('gym', False))
+def calculate_completion_percentage(exercises):
+    if not exercises:
+        return 0.0
+    completed = sum(1 for ex in exercises if ex.completed)
+    return (completed / len(exercises)) * 100
 
-def check_eating_completed(habit_data):
-    return (habit_data.get('breakfast', False) and 
-            habit_data.get('lunch', False) and 
-            habit_data.get('dinner', False))
+def is_workout_complete(exercises):
+    return all(ex.completed for ex in exercises)
 
 # Routes
 @api_router.get("/")
 async def root():
-    return {"message": "Habit Tracker API is running! 💖"}
+    return {"message": "Gym Tracker API is running! 💪"}
 
-@api_router.post("/habits", response_model=DailyHabit)
-async def create_or_update_habit(habit_data: DailyHabitCreate):
-    """Create or update daily habit for a specific date"""
+@api_router.post("/workout-session", response_model=WorkoutSession)
+async def create_workout_session(session_data: WorkoutSessionCreate):
+    """Create a new workout session for a specific date and workout day"""
     try:
-        # Check if habit already exists for this date
-        existing = await db.daily_habits.find_one({"date": habit_data.date})
-        
-        habit_dict = habit_data.dict()
-        habit_dict['completed_all'] = check_all_completed(habit_dict)
-        habit_dict['eating_completed'] = check_eating_completed(habit_dict)
+        # Check if session already exists for this date
+        existing = await db.workout_sessions.find_one({
+            "date": session_data.date,
+            "workout_day": session_data.workout_day
+        })
         
         if existing:
-            # Update existing habit
-            habit_dict['id'] = existing['id']
-            await db.daily_habits.replace_one({"date": habit_data.date}, habit_dict)
-        else:
-            # Create new habit
-            habit_obj = DailyHabit(**habit_dict)
-            await db.daily_habits.insert_one(habit_obj.dict())
-            
-        return DailyHabit(**habit_dict)
+            return WorkoutSession(**existing)
+        
+        # Get workout routine
+        if session_data.workout_day not in WORKOUT_ROUTINE:
+            raise HTTPException(status_code=400, detail="Invalid workout day")
+        
+        routine = WORKOUT_ROUTINE[session_data.workout_day]
+        
+        # Create exercise completions
+        exercises = [
+            ExerciseCompletion(exercise_name=ex["name"], completed=False)
+            for ex in routine["exercises"]
+        ]
+        
+        # Create session
+        session = WorkoutSession(
+            date=session_data.date,
+            workout_day=session_data.workout_day,
+            workout_name=routine["name"],
+            exercises=exercises,
+            completed=False,
+            completion_percentage=0.0
+        )
+        
+        await db.workout_sessions.insert_one(session.dict())
+        return session
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@api_router.patch("/habits/{date}")
-async def update_habit(date: str, updates: DailyHabitUpdate):
-    """Update specific fields of a daily habit"""
+@api_router.patch("/workout-session/{date}/{workout_day}/exercise")
+async def update_exercise_completion(date: str, workout_day: int, exercise_update: ExerciseUpdate):
+    """Update completion status of a specific exercise"""
     try:
-        existing = await db.daily_habits.find_one({"date": date})
-        if not existing:
-            # Create new habit if it doesn't exist
-            default_habit = DailyHabit(date=date)
-            existing = default_habit.dict()
+        session = await db.workout_sessions.find_one({
+            "date": date,
+            "workout_day": workout_day
+        })
         
-        # Only update provided fields
-        update_data = {k: v for k, v in updates.dict().items() if v is not None}
+        if not session:
+            raise HTTPException(status_code=404, detail="Workout session not found")
         
-        # Update the existing habit with new data
-        for key, value in update_data.items():
-            existing[key] = value
+        # Update exercise completion
+        updated = False
+        for exercise in session["exercises"]:
+            if exercise["exercise_name"] == exercise_update.exercise_name:
+                exercise["completed"] = exercise_update.completed
+                exercise["timestamp"] = datetime.utcnow() if exercise_update.completed else None
+                updated = True
+                break
         
-        # Recalculate completion flags
-        existing['completed_all'] = check_all_completed(existing)
-        existing['eating_completed'] = check_eating_completed(existing)
+        if not updated:
+            raise HTTPException(status_code=404, detail="Exercise not found")
         
-        await db.daily_habits.replace_one({"date": date}, existing, upsert=True)
-        return DailyHabit(**existing)
+        # Recalculate completion stats
+        exercises = [ExerciseCompletion(**ex) for ex in session["exercises"]]
+        session["completion_percentage"] = calculate_completion_percentage(exercises)
+        session["completed"] = is_workout_complete(exercises)
+        
+        await db.workout_sessions.replace_one(
+            {"date": date, "workout_day": workout_day}, 
+            session
+        )
+        
+        return WorkoutSession(**session)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@api_router.get("/habits/{date}", response_model=DailyHabit)
-async def get_habit(date: str):
-    """Get habit for a specific date"""
+@api_router.get("/workout-session/{date}/{workout_day}", response_model=WorkoutSession)
+async def get_workout_session(date: str, workout_day: int):
+    """Get workout session for a specific date and workout day"""
     try:
-        habit = await db.daily_habits.find_one({"date": date})
-        if not habit:
-            # Return default habit structure if not found
-            default_habit = DailyHabit(date=date)
-            return default_habit
-        return DailyHabit(**habit)
+        session = await db.workout_sessions.find_one({
+            "date": date,
+            "workout_day": workout_day
+        })
+        
+        if not session:
+            # Create default session
+            create_data = WorkoutSessionCreate(date=date, workout_day=workout_day)
+            return await create_workout_session(create_data)
+        
+        return WorkoutSession(**session)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@api_router.get("/habits", response_model=List[DailyHabit])
-async def get_all_habits():
-    """Get all habits (for admin view)"""
+@api_router.get("/workout-sessions/{date}")
+async def get_all_sessions_for_date(date: str):
+    """Get all workout sessions for a specific date"""
     try:
-        habits = await db.daily_habits.find().sort("date", -1).to_list(1000)
-        return [DailyHabit(**habit) for habit in habits]
+        sessions = await db.workout_sessions.find({"date": date}).to_list(10)
+        return [WorkoutSession(**session) for session in sessions]
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.get("/progress/weekly")
 async def get_weekly_progress():
-    """Get weekly progress with separate eating and gym tracking"""
+    """Get weekly gym progress"""
     try:
-        # Get current week's habits
+        # Get current week's sessions
         today = datetime.now().date()
         week_start = today - timedelta(days=today.weekday())
         week_dates = [(week_start + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(7)]
         
-        habits = await db.daily_habits.find({"date": {"$in": week_dates}}).to_list(100)
-        habits_dict = {habit['date']: habit for habit in habits}
+        sessions = await db.workout_sessions.find({
+            "date": {"$in": week_dates},
+            "completed": True
+        }).to_list(100)
         
-        # Calculate eating progress (7 days)
-        eating_completed = 0
-        for date in week_dates:
-            if date in habits_dict and habits_dict[date].get('eating_completed', False):
-                eating_completed += 1
+        completed_workouts = len(sessions)
+        workout_days_completed = list(set(session["workout_day"] for session in sessions))
         
-        # Calculate gym progress (4 days target)
-        gym_completed = 0
-        for date in week_dates:
-            if date in habits_dict and habits_dict[date].get('gym', False):
-                gym_completed += 1
-        
-        eating_progress = {
-            "completed_days": eating_completed,
-            "total_days": 7,
-            "percentage": (eating_completed / 7) * 100
-        }
-        
-        gym_progress = {
-            "completed_days": gym_completed,
-            "total_days": 4,
-            "percentage": min((gym_completed / 4) * 100, 100)  # Cap at 100%
-        }
-        
-        # Overall progress (average of both)
-        overall_progress = (eating_progress["percentage"] + gym_progress["percentage"]) / 2
+        progress_percentage = (completed_workouts / 4) * 100  # 4 workouts target per week
+        progress_percentage = min(progress_percentage, 100)  # Cap at 100%
         
         # Determine rewards based on progress
         rewards = []
-        if overall_progress >= 25:
-            rewards.append("🌟 Getting Started!")
-        if overall_progress >= 50:
-            rewards.append("🔥 On Fire!")
-        if overall_progress >= 75:
-            rewards.append("💎 Diamond Streak!")
-        if overall_progress >= 90:
-            rewards.append("👑 Perfect Week Queen!")
+        if completed_workouts >= 1:
+            rewards.append("🌟 First Workout!")
+        if completed_workouts >= 2:
+            rewards.append("🔥 Getting Strong!")
+        if completed_workouts >= 3:
+            rewards.append("💎 Almost There!")
+        if completed_workouts >= 4:
+            rewards.append("👑 Workout Queen!")
         
         return WeeklyProgress(
             week_start=week_start.strftime('%Y-%m-%d'),
-            eating_progress=eating_progress,
-            gym_progress=gym_progress,
-            overall_progress=overall_progress,
+            completed_workouts=completed_workouts,
+            total_target=4,
+            progress_percentage=progress_percentage,
+            workout_days_completed=workout_days_completed,
             rewards_unlocked=rewards
         )
     except Exception as e:
@@ -420,47 +419,47 @@ async def get_weekly_progress():
 
 @api_router.get("/progress/monthly")
 async def get_monthly_progress():
-    """Get monthly progress and statistics"""
+    """Get monthly gym progress"""
     try:
         today = datetime.now().date()
         month_start = today.replace(day=1)
         
         # Get days in current month
         days_in_month = calendar.monthrange(today.year, today.month)[1]
-        month_dates = [(month_start + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(days_in_month)]
         
-        habits = await db.daily_habits.find({"date": {"$in": month_dates}}).to_list(1000)
-        habits_dict = {habit['date']: habit for habit in habits}
+        # Calculate target workouts for month (4 per week)
+        weeks_in_month = (days_in_month // 7) + (1 if days_in_month % 7 > 0 else 0)
+        target_workouts = weeks_in_month * 4
         
-        # Calculate statistics
-        completed_days = sum(1 for date in month_dates if date in habits_dict and habits_dict[date].get('completed_all', False))
-        eating_days = sum(1 for date in month_dates if date in habits_dict and habits_dict[date].get('eating_completed', False))
-        gym_days = sum(1 for date in month_dates if date in habits_dict and habits_dict[date].get('gym', False))
+        # Get completed workouts this month
+        sessions = await db.workout_sessions.find({
+            "date": {"$regex": f"^{today.strftime('%Y-%m')}"},
+            "completed": True
+        }).to_list(1000)
         
-        progress_percentage = (completed_days / days_in_month) * 100
+        completed_workouts = len(sessions)
+        progress_percentage = (completed_workouts / target_workouts) * 100 if target_workouts > 0 else 0
         
-        # Calculate current streak
+        # Calculate streak
         streak_info = await get_streak_info()
         
         # Monthly rewards
         rewards = []
-        if progress_percentage >= 20:
+        if completed_workouts >= 2:
             rewards.append("🎯 Month Started!")
-        if progress_percentage >= 40:
+        if completed_workouts >= 6:
             rewards.append("💪 Strong Month!")
-        if progress_percentage >= 60:
+        if completed_workouts >= 10:
             rewards.append("🔥 Excellent Month!")
-        if progress_percentage >= 80:
+        if completed_workouts >= 14:
             rewards.append("👑 Amazing Month!")
-        if progress_percentage >= 95:
+        if progress_percentage >= 90:
             rewards.append("🏆 Perfect Month!")
         
         return MonthlyProgress(
             month=today.strftime('%Y-%m'),
-            total_days=days_in_month,
-            completed_days=completed_days,
-            eating_days=eating_days,
-            gym_days=gym_days,
+            total_workouts=target_workouts,
+            completed_workouts=completed_workouts,
             progress_percentage=progress_percentage,
             current_streak=streak_info.current_streak,
             longest_streak=streak_info.longest_streak,
@@ -471,96 +470,58 @@ async def get_monthly_progress():
 
 @api_router.get("/progress/streak")
 async def get_streak_info():
-    """Get current and longest streak information"""
+    """Get current and longest workout streak"""
     try:
-        # Get all habits sorted by date
-        habits = await db.daily_habits.find().sort("date", 1).to_list(1000)
+        # Get all completed workout sessions grouped by date
+        sessions = await db.workout_sessions.find({"completed": True}).sort("date", 1).to_list(1000)
         
-        if not habits:
-            return StreakInfo(current_streak=0, longest_streak=0, last_completion_date=None)
+        if not sessions:
+            return StreakInfo(current_streak=0, longest_streak=0, last_workout_date=None)
         
-        # Calculate streaks
-        current_streak = 0
-        longest_streak = 0
-        temp_streak = 0
-        last_completion_date = None
+        # Group by date and count unique workout days per date
+        workout_dates = {}
+        for session in sessions:
+            date = session["date"]
+            if date not in workout_dates:
+                workout_dates[date] = set()
+            workout_dates[date].add(session["workout_day"])
         
-        # Convert to date objects and sort
-        habit_dates = []
-        for habit in habits:
-            if habit.get('completed_all', False):
-                habit_dates.append(datetime.strptime(habit['date'], '%Y-%m-%d').date())
+        # Get dates where at least one workout was completed
+        completed_dates = sorted(workout_dates.keys())
         
-        habit_dates.sort()
-        
-        if not habit_dates:
-            return StreakInfo(current_streak=0, longest_streak=0, last_completion_date=None)
+        if not completed_dates:
+            return StreakInfo(current_streak=0, longest_streak=0, last_workout_date=None)
         
         # Calculate current streak from today backwards
+        current_streak = 0
         today = datetime.now().date()
         current_date = today
         
-        while current_date in habit_dates:
+        while current_date.strftime('%Y-%m-%d') in completed_dates:
             current_streak += 1
             current_date -= timedelta(days=1)
         
         # Calculate longest streak
-        if len(habit_dates) > 0:
-            temp_streak = 1
-            for i in range(1, len(habit_dates)):
-                if habit_dates[i] - habit_dates[i-1] == timedelta(days=1):
+        longest_streak = 0
+        temp_streak = 1
+        
+        if len(completed_dates) > 0:
+            for i in range(1, len(completed_dates)):
+                prev_date = datetime.strptime(completed_dates[i-1], '%Y-%m-%d').date()
+                curr_date = datetime.strptime(completed_dates[i], '%Y-%m-%d').date()
+                
+                if curr_date - prev_date == timedelta(days=1):
                     temp_streak += 1
                 else:
                     longest_streak = max(longest_streak, temp_streak)
                     temp_streak = 1
             longest_streak = max(longest_streak, temp_streak)
-            last_completion_date = habit_dates[-1].strftime('%Y-%m-%d')
         
         return StreakInfo(
             current_streak=current_streak,
             longest_streak=longest_streak,
-            last_completion_date=last_completion_date
+            last_workout_date=completed_dates[-1] if completed_dates else None
         )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@api_router.get("/calendar/{year}/{month}")
-async def get_calendar_data(year: int, month: int):
-    """Get calendar data for a specific month"""
-    try:
-        # Create date range for the month
-        month_start = date(year, month, 1)
-        days_in_month = calendar.monthrange(year, month)[1]
-        month_dates = [(month_start + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(days_in_month)]
-        
-        habits = await db.daily_habits.find({"date": {"$in": month_dates}}).to_list(1000)
-        habits_dict = {habit['date']: habit for habit in habits}
-        
-        calendar_data = []
-        for date_str in month_dates:
-            if date_str in habits_dict:
-                habit = habits_dict[date_str]
-                calendar_data.append(CalendarDay(
-                    date=date_str,
-                    breakfast=habit.get('breakfast', False),
-                    lunch=habit.get('lunch', False),
-                    dinner=habit.get('dinner', False),
-                    gym=habit.get('gym', False),
-                    completed_all=habit.get('completed_all', False),
-                    eating_completed=habit.get('eating_completed', False)
-                ))
-            else:
-                calendar_data.append(CalendarDay(
-                    date=date_str,
-                    breakfast=False,
-                    lunch=False,
-                    dinner=False,
-                    gym=False,
-                    completed_all=False,
-                    eating_completed=False
-                ))
-        
-        return calendar_data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -588,7 +549,7 @@ async def get_all_workouts():
     """Get all workout days (1-4)"""
     try:
         workouts = []
-        for day in range(1, 5):  # Only 4 workout days now
+        for day in range(1, 5):
             workout = WORKOUT_ROUTINE[day]
             exercises = [Exercise(**exercise) for exercise in workout["exercises"]]
             workouts.append(WorkoutDay(
