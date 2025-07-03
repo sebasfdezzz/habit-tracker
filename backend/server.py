@@ -177,8 +177,8 @@ WORKOUT_ROUTINE = {
             {
                 "name": "Wall Sit (Isometric Squat)",
                 "sets": 4,
-                "reps": "45 sec",
-                "description": "Isometric squat hold against wall",
+                "reps": 1,
+                "description": "45 sec isometric squat hold against wall",
                 "video_placeholder": "Coming Soon: Wall Sit Tutorial"
             },
             {
