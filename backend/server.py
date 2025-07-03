@@ -96,35 +96,35 @@ WORKOUT_ROUTINE = {
                 "name": "Hip Abductor Machine",
                 "sets": 4,
                 "reps": 15,
-                "description": "Seated hip abduction targeting outer glutes",
+                "description": "Push legs outward to work outer glutes",
                 "video_placeholder": "Coming Soon: Hip Abductor Tutorial"
             },
             {
                 "name": "Hip Adductor Machine", 
                 "sets": 4,
                 "reps": 15,
-                "description": "Seated hip adduction targeting inner thighs",
+                "description": "Squeeze legs inward for inner thighs",
                 "video_placeholder": "Coming Soon: Hip Adductor Tutorial"
             },
             {
                 "name": "Hip Thrust",
                 "sets": 4,
                 "reps": 15,
-                "description": "Barbell hip thrust for glute activation",
+                "description": "Lift hips using glutes and hamstrings",
                 "video_placeholder": "Coming Soon: Hip Thrust Tutorial"
             },
             {
                 "name": "Romanian Deadlift",
                 "sets": 4,
                 "reps": 15,
-                "description": "Hamstring and glute focused deadlift variation",
+                "description": "Lower weights with slight bend for hamstrings",
                 "video_placeholder": "Coming Soon: Romanian Deadlift Tutorial"
             },
             {
                 "name": "Goblet Squats",
                 "sets": 4,
                 "reps": 15,
-                "description": "Front-loaded squat with dumbbell or kettlebell",
+                "description": "Hold weight and squat for legs and glutes",
                 "video_placeholder": "Coming Soon: Goblet Squat Tutorial"
             }
         ],
@@ -137,14 +137,14 @@ WORKOUT_ROUTINE = {
                 "name": "Lat Pulldown",
                 "sets": 4,
                 "reps": 15,
-                "description": "Wide grip lat pulldown for back width",
+                "description": "Pull bar to chest to target lats",
                 "video_placeholder": "Coming Soon: Lat Pulldown Tutorial"
             },
             {
                 "name": "Seated Cable Row",
                 "sets": 4,
                 "reps": 15,
-                "description": "Seated pulley row for mid-back thickness",
+                "description": "Seating, pull cable to waist for mid-back",
                 "video_placeholder": "Coming Soon: Cable Row Tutorial"
             },
             {
@@ -165,7 +165,7 @@ WORKOUT_ROUTINE = {
                 "name": "Lying Bicep Curls",
                 "sets": 4,
                 "reps": 15,
-                "description": "Supine bicep curls for peak contraction",
+                "description": "Curl weights while lying 45 degrees",
                 "video_placeholder": "Coming Soon: Lying Curls Tutorial"
             }
         ],
@@ -177,36 +177,29 @@ WORKOUT_ROUTINE = {
             {
                 "name": "Wall Sit (Isometric Squat)",
                 "sets": 4,
-                "reps": 1,
-                "description": "45 sec isometric squat hold against wall",
+                "reps": 45,
+                "description": "45 sec: hold squat against wall for time",
                 "video_placeholder": "Coming Soon: Wall Sit Tutorial"
-            },
-            {
-                "name": "Bulgarian Split Squats",
-                "sets": 4,
-                "reps": 15,
-                "description": "Single leg squat with rear foot elevated",
-                "video_placeholder": "Coming Soon: Bulgarian Squat Tutorial"
             },
             {
                 "name": "Donkey Kicks",
                 "sets": 4,
                 "reps": 15,
-                "description": "Quadruped hip extension for glutes",
+                "description": "Kick back while on all fours for glutes",
                 "video_placeholder": "Coming Soon: Donkey Kicks Tutorial"
             },
             {
                 "name": "Lateral Donkey Kicks",
                 "sets": 4,
                 "reps": 15,
-                "description": "Side-lying hip abduction kicks",
+                "description": "Kick leg sideways for hip and glutes",
                 "video_placeholder": "Coming Soon: Lateral Kicks Tutorial"
             },
             {
                 "name": "Standing Calf Raises",
                 "sets": 4,
                 "reps": 20,
-                "description": "Standing calf raises for gastrocnemius",
+                "description": "Raise heels to work calves",
                 "video_placeholder": "Coming Soon: Calf Raises Tutorial"
             }
         ],
@@ -219,21 +212,21 @@ WORKOUT_ROUTINE = {
                 "name": "Military Press",
                 "sets": 4,
                 "reps": 15,
-                "description": "Standing overhead press for shoulders",
+                "description": "Press weight overhead for shoulders",
                 "video_placeholder": "Coming Soon: Military Press Tutorial"
             },
             {
                 "name": "Lateral Raises",
                 "sets": 4,
                 "reps": 15,
-                "description": "Dumbbell side raises for medial deltoids",
+                "description": "Raise dumbells to the side",
                 "video_placeholder": "Coming Soon: Lateral Raises Tutorial"
             },
             {
                 "name": "Bench Dips",
                 "sets": 4,
                 "reps": 15,
-                "description": "Tricep dips using bench or chair",
+                "description": "Lower body on bench to hit triceps",
                 "video_placeholder": "Coming Soon: Bench Dips Tutorial"
             },
             {
@@ -244,11 +237,59 @@ WORKOUT_ROUTINE = {
                 "video_placeholder": "Coming Soon: Rope Pushdown Tutorial"
             },
             {
-                "name": "Push-ups",
+                "name": "Incline Push-ups",
                 "sets": 4,
-                "reps": 15,
-                "description": "Standard push-ups for chest and triceps",
+                "reps": 10,
+                "description": "Push-ups on postive incline for chest/triceps",
                 "video_placeholder": "Coming Soon: Push-ups Tutorial"
+            }
+        ],
+        "is_active": True
+    },
+    5: {
+        "name": "Core",
+        "exercises": [
+            {
+                "name": "Flutter Kicks",
+                "sets": 3,
+                "reps": 50,
+                "description": "Kick your legs alternately while keeping them straight.",
+                "video_placeholder": "Coming Soon: Flutter Kicks Tutorial"
+            },
+            {
+                "name": "Leg Raises",
+                "sets": 3,
+                "reps": 12,
+                "description": "Lift your legs to 90 degrees and lower slowly.",
+                "video_placeholder": "Coming Soon: Leg Raises Tutorial"
+            },
+            {
+                "name": "Crunches",
+                "sets": 3,
+                "reps": 15,
+                "description": "Lift your upper body towards your knees.",
+                "video_placeholder": "Coming Soon: Crunches Tutorial"
+            },
+            {
+                "name": "Sit Ups",
+                "sets": 3,
+                "reps": 15,
+                "description": "Complete sit-ups with full range of motion.",
+                "video_placeholder": "Coming Soon: Sit Ups Tutorial"
+            },
+            {
+                "name": "Bicycle Kicks",
+                "sets": 3,
+                "reps": 40,
+                "description": "Alternate legs like pedaling a bicycle.",
+                "video_placeholder": "Coming Soon: Bicycle Kicks Tutorial"
+            },
+            {
+                "name": "Plank",
+                "sets": 2,
+                "reps": 60,
+                "description": "Hold a straight body position on your forearms.",
+                "video_placeholder": "Coming Soon: Plank Tutorial"
             }
         ],
         "is_active": True
@@ -546,10 +587,10 @@ async def get_workout(day: int):
 
 @api_router.get("/workout")
 async def get_all_workouts():
-    """Get all workout days (1-4)"""
+    """Get all workout days (1-5)"""
     try:
         workouts = []
-        for day in range(1, 5):
+        for day in range(1, 6):
             workout = WORKOUT_ROUTINE[day]
             exercises = [Exercise(**exercise) for exercise in workout["exercises"]]
             workouts.append(WorkoutDay(

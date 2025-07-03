@@ -370,7 +370,8 @@ const GymRoutineView = () => {
     { day: 1, name: "Leg Day 1", color: "from-green-500 to-emerald-600" },
     { day: 2, name: "Pull", color: "from-blue-500 to-indigo-600" },
     { day: 3, name: "Leg Day 2", color: "from-green-500 to-emerald-600" },
-    { day: 4, name: "Push", color: "from-red-500 to-pink-600" }
+    { day: 4, name: "Push", color: "from-red-500 to-pink-600" },
+    { day: 5, name: "Core", color: "from-red-500 to-indigo-600" }
   ];
 
   return (
@@ -421,8 +422,14 @@ const GymRoutineView = () => {
               }`}
             >
               <div className="text-center">
-                <div className="text-lg font-bold">Day {day}</div>
-                <div className="text-sm opacity-90">{name}</div>
+                {day === 5 ? (
+                  <div className="text-lg font-bold">{name}</div>
+                ) : (
+                  <>
+                    <div className="text-lg">Day {day}</div>
+                    <div className="text-sm opacity-90">{name}</div>
+                  </>
+                )}
               </div>
             </button>
           );
