@@ -145,7 +145,7 @@ WORKOUT_ROUTINE = {
                 "sets": 4,
                 "reps": 15,
                 "description": "Seating, pull cable to waist for mid-back",
-                "video_placeholder": "Pull/CableRow
+                "video_placeholder": "Pull/CableRow"
             },
             {
                 "name": "Single-Arm Dumbbell Row",
