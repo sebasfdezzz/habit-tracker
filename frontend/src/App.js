@@ -65,7 +65,7 @@ const LogProgressView = () => {
   const [streakInfo, setStreakInfo] = useState(null);
   const [todaySessions, setTodaySessions] = useState([]);
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('en-CA');
 
   // Celebration function
   const celebrate = () => {
@@ -328,7 +328,7 @@ const GymRoutineView = () => {
     setShowExerciseModal(true);
   };
 
-  const toggleExerciseCompletion = async (exerciseName) => {
+  const toggleExerciseCompletion = async (exerciseName, workoutName) => {
     if (!currentSession) return;
     
     setLoading(true);
@@ -336,19 +336,21 @@ const GymRoutineView = () => {
       const currentExercise = currentSession.exercises.find(ex => ex.exercise_name === exerciseName);
       const newCompletedState = !currentExercise.completed;
       
-      const response = await axios.patch(
-        `${API}/workout-session/${today}/${selectedWorkoutDay}/exercise`,
-        {
-          exercise_name: exerciseName,
-          completed: newCompletedState
+      if (workoutName != 'Core'){
+        const response = await axios.patch(
+          `${API}/workout-session/${today}/${selectedWorkoutDay}/exercise`,
+          {
+            exercise_name: exerciseName,
+            completed: newCompletedState
+          }
+        );
+        
+        setCurrentSession(response.data);
+        
+        // Celebrate if workout is completed
+        if (response.data.completed && !currentSession.completed) {
+          celebrate();
         }
-      );
-      
-      setCurrentSession(response.data);
-      
-      // Celebrate if workout is completed
-      if (response.data.completed && !currentSession.completed) {
-        celebrate();
       }
     } catch (error) {
       console.error("Error updating exercise:", error);
@@ -457,7 +459,7 @@ const GymRoutineView = () => {
                   }`}
                 >
                   <button
-                    onClick={() => toggleExerciseCompletion(exercise.name)}
+                    onClick={() => toggleExerciseCompletion(exercise.name, currentWorkout.name)}
                     className="mr-4 flex-shrink-0"
                     disabled={loading}
                   >
