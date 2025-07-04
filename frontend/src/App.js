@@ -592,7 +592,7 @@ const App = () => {
         <div className="text-center">
           <div className="flex items-center justify-center mb-4">
             <Heart className="w-8 h-8 mr-2 text-pink-200" />
-            <h1 className="text-2xl font-bold">Welcome Mich! 💪</h1>
+            <h1 className="text-2xl font-bold">Holaaa Mich! 💪</h1>
           </div>
           <p className="text-pink-100">Your personal gym tracker</p>
         </div>
