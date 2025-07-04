@@ -25,7 +25,7 @@ const ExerciseModal = ({ exercise, isOpen, onClose }) => {
         </div>
         
         {/* Media Frame */}
-        <div className="bg-gradient-to-br from-purple-100 to-pink-100 h-48 rounded-xl mb-4 flex items-center justify-center border-2 border-dashed border-purple-300 overflow-hidden">
+        <div className="bg-gradient-to-br from-purple-100 to-pink-100 h-80 rounded-xl mb-4 flex items-center justify-center border-2 border-dashed border-purple-300 overflow-hidden">
           {(() => {
             const fileUrl = `/videos/${exercise.video_url}`;
             const extension = exercise.video_url.split('.').pop().toLowerCase();
