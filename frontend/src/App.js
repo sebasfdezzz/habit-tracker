@@ -445,6 +445,7 @@ const GymRoutineView = () => {
                   ? `bg-gradient-to-r ${color} transform scale-105 shadow-lg`
                   : 'bg-gray-400 hover:bg-gray-500'
               }`}
+              style={'width: 40%'}
             >
               <div className="text-center">
                 <div className="text-lg">Day 2 & 4</div>
