@@ -328,7 +328,7 @@ const GymRoutineView = () => {
     setShowExerciseModal(true);
   };
 
-  const toggleExerciseCompletion = async (exerciseName, workoutName) => {
+  const toggleExerciseCompletion = async (exerciseName) => {
     if (!currentSession) return;
     
     setLoading(true);
@@ -336,21 +336,19 @@ const GymRoutineView = () => {
       const currentExercise = currentSession.exercises.find(ex => ex.exercise_name === exerciseName);
       const newCompletedState = !currentExercise.completed;
       
-      if (workoutName != 'Core'){
-        const response = await axios.patch(
-          `${API}/workout-session/${today}/${selectedWorkoutDay}/exercise`,
-          {
-            exercise_name: exerciseName,
-            completed: newCompletedState
-          }
-        );
-        
-        setCurrentSession(response.data);
-        
-        // Celebrate if workout is completed
-        if (response.data.completed && !currentSession.completed) {
-          celebrate();
+      const response = await axios.patch(
+        `${API}/workout-session/${today}/${selectedWorkoutDay}/exercise`,
+        {
+          exercise_name: exerciseName,
+          completed: newCompletedState
         }
+      );
+      
+      setCurrentSession(response.data);
+      
+      // Celebrate if workout is completed
+      if (response.data.completed && !currentSession.completed) {
+        celebrate();
       }
     } catch (error) {
       console.error("Error updating exercise:", error);
@@ -373,7 +371,7 @@ const GymRoutineView = () => {
     { day: 2, name: "Pull", color: "from-blue-500 to-indigo-600" },
     { day: 3, name: "Leg Day 2", color: "from-green-500 to-emerald-600" },
     { day: 4, name: "Push", color: "from-red-500 to-pink-600" },
-    { day: 5, name: "Core", color: "from-red-500 to-indigo-600" }
+    { day: 5, name: "Core", color: "from-red-500 to-orange-600" }
   ];
 
   return (
@@ -408,14 +406,39 @@ const GymRoutineView = () => {
         </div>
       )}
 
-      {/* 4-Day Selector */}
+      {/* 4-Day Grid */}
       <div className="grid grid-cols-2 gap-3">
-        {workoutDays.map(({ day, name, color }) => {
+        {workoutDays
+          .filter(({ day }) => day !== 5)
+          .map(({ day, name, color }) => {
+            const isSelected = selectedWorkoutDay === day;
+            return (
+              <button
+                key={day}
+                onClick={() => loadWorkout(day)}
+                className={`p-4 rounded-xl text-white font-semibold transition-all ${
+                  isSelected
+                    ? `bg-gradient-to-r ${color} transform scale-105 shadow-lg`
+                    : 'bg-gray-400 hover:bg-gray-500'
+                }`}
+              >
+                <div className="text-center">
+                  <div className="text-lg">Day {day}</div>
+                  <div className="text-sm opacity-90">{name}</div>
+                </div>
+              </button>
+            );
+          })}
+      </div>
+
+      {/* Core Button Centered Below */}
+      <div className="mt-6 flex justify-center">
+        {(() => {
+          const { day, name, color } = workoutDays.find(d => d.day === 5);
           const isSelected = selectedWorkoutDay === day;
-          
+
           return (
             <button
-              key={day}
               onClick={() => loadWorkout(day)}
               className={`p-4 rounded-xl text-white font-semibold transition-all ${
                 isSelected
@@ -424,19 +447,14 @@ const GymRoutineView = () => {
               }`}
             >
               <div className="text-center">
-                {day === 5 ? (
-                  <div className="text-lg font-bold">{name}</div>
-                ) : (
-                  <>
-                    <div className="text-lg">Day {day}</div>
-                    <div className="text-sm opacity-90">{name}</div>
-                  </>
-                )}
+                <div className="text-lg">Day 2 & 4</div>
+                <div className="text-sm opacity-90">{name}</div>
               </div>
             </button>
           );
-        })}
+        })()}
       </div>
+
 
       {/* Current Workout */}
       {currentWorkout && (
@@ -458,18 +476,19 @@ const GymRoutineView = () => {
                       : 'bg-gray-50 hover:bg-gray-100'
                   }`}
                 >
-                  <button
-                    onClick={() => toggleExerciseCompletion(exercise.name, currentWorkout.name)}
-                    className="mr-4 flex-shrink-0"
-                    disabled={loading}
-                  >
-                    {isCompleted ? (
-                      <CheckCircle className="w-8 h-8 text-green-500" />
-                    ) : (
-                      <Circle className="w-8 h-8 text-gray-400 hover:text-purple-500" />
-                    )}
-                  </button>
-                  
+                  {currentWorkout.name !== 'Core' && (
+                    <button
+                      onClick={() => toggleExerciseCompletion(exercise.name)}
+                      className="mr-4 flex-shrink-0"
+                      disabled={loading}
+                    >
+                      {isCompleted ? (
+                        <CheckCircle className="w-8 h-8 text-green-500" />
+                      ) : (
+                        <Circle className="w-8 h-8 text-gray-400 hover:text-purple-500" />
+                      )}
+                    </button>
+                  )}
                   <div className="flex-1" onClick={() => handleExerciseClick(exercise)}>
                     <div className={`font-semibold ${isCompleted ? 'text-green-800 line-through' : 'text-gray-800'}`}>
                       {exercise.name}
