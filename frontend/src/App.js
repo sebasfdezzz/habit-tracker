@@ -548,9 +548,45 @@ const GymRoutineView = () => {
 // Main App Component
 const App = () => {
   const [activeTab, setActiveTab] = useState('progress'); // 'progress' or 'routine'
+  const [showModal, setShowModal] = useState(false);
+  const [quote, setQuote] = useState('');
+
+  useEffect(() => {
+    const quotes = [
+      "El dolor es temporal, el orgullo es para siempre.",
+      "No cuentes los días, haz que los días cuenten.",
+      "La motivación te pone en marcha, el hábito te mantiene.",
+      "Si puedes soñarlo, puedes lograrlo.",
+      "El único mal entrenamiento es el que no hiciste.",
+      "No se trata de ser el mejor, se trata de ser mejor que ayer.",
+      "La fuerza no viene de ganar, viene de luchar.",
+      "Cree en ti y todo será posible.",
+      "Tu cuerpo puede soportar casi todo, es tu mente la que tienes que convencer.",
+      "Cada repetición te acerca a tu mejor versión."
+    ];
+    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    setQuote(randomQuote);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-100 via-pink-50 to-blue-100">
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="bg-gradient-to-br from-white via-purple-50 to-pink-50 text-gray-800 rounded-3xl p-6 shadow-2xl max-w-md w-11/12 relative">
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-3 right-3 text-gray-400 hover:text-pink-400 transition"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="text-center">
+              <h2 className="text-2xl font-bold mb-2">Holaaa Mich! 🎉</h2>
+              <p className="text-purple-500">{quote}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="bg-gradient-to-r from-purple-500 to-pink-600 text-white p-6 rounded-b-3xl shadow-lg">
         <div className="text-center">
