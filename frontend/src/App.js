@@ -33,10 +33,19 @@ const ExerciseModal = ({ exercise, isOpen, onClose }) => {
 
             if (isVideo) {
               return (
-                <video className="w-full h-full object-cover" controls>
-                  <source src={fileUrl} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
+                <video
+                  className="w-full h-full object-cover"
+                  src={`/videos/${exercise.video_url}`}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  onClick={(e) => {
+                    e.currentTarget.muted = false;
+                    e.currentTarget.controls = true;
+                    e.currentTarget.play();
+                  }}
+                />
               );
             } else {
               return (
