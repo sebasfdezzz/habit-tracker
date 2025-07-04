@@ -24,14 +24,28 @@ const ExerciseModal = ({ exercise, isOpen, onClose }) => {
           </button>
         </div>
         
-        {/* Video Placeholder */}
-        <div className="bg-gradient-to-br from-purple-100 to-pink-100 h-48 rounded-xl mb-4 flex items-center justify-center border-2 border-dashed border-purple-300">
-          <video width="640" height="360" controls>
-            <source src={`/videos/${exercise.video_placeholder}.mp4`} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+        {/* Media Frame */}
+        <div className="bg-gradient-to-br from-purple-100 to-pink-100 h-48 rounded-xl mb-4 flex items-center justify-center border-2 border-dashed border-purple-300 overflow-hidden">
+          {(() => {
+            const fileUrl = `/videos/${exercise.video_url}`;
+            const extension = exercise.video_url.split('.').pop().toLowerCase();
+            const isVideo = extension === 'mp4';
+
+            if (isVideo) {
+              return (
+                <video className="w-full h-full object-cover" controls>
+                  <source src={fileUrl} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              );
+            } else {
+              return (
+                <img src={fileUrl} alt="Exercise Media" className="w-full h-full object-cover" />
+              );
+            }
+          })()}
         </div>
-        
+
         {/* Exercise Details */}
         <div className="space-y-3">
           <div className="bg-purple-50 p-4 rounded-xl">
