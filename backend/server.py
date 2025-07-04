@@ -12,7 +12,7 @@ from datetime import datetime, date, timedelta
 import base64
 import calendar
 
-# test auto deploy
+# test auto deploy 2
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
