@@ -26,10 +26,10 @@ const ExerciseModal = ({ exercise, isOpen, onClose }) => {
         
         {/* Video Placeholder */}
         <div className="bg-gradient-to-br from-purple-100 to-pink-100 h-48 rounded-xl mb-4 flex items-center justify-center border-2 border-dashed border-purple-300">
-          <div className="text-center text-purple-600">
-            <Play className="w-12 h-12 mx-auto mb-2" />
-            <p className="text-sm font-medium">{exercise.video_placeholder}</p>
-          </div>
+          <video width="640" height="360" controls>
+            <source src={`/videos/${exercise.video_placeholder}.mp4`} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
         </div>
         
         {/* Exercise Details */}
