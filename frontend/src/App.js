@@ -43,7 +43,7 @@ const ExerciseModal = ({ exercise, isOpen, onClose }) => {
                   onClick={(e) => {
                     e.currentTarget.muted = false;
                     e.currentTarget.controls = true;
-                    e.currentTarget.play();
+                    //e.currentTarget.play();
                   }}
                 />
               );
