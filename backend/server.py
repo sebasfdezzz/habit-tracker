@@ -97,35 +97,35 @@ WORKOUT_ROUTINE = {
                 "sets": 4,
                 "reps": 15,
                 "description": "Push legs outward to work outer glutes",
-                "video_placeholder": "Leg1/Abductor"
+                "video_placeholder": "Leg1/Abductor.gif"
             },
             {
                 "name": "Hip Adductor Machine", 
                 "sets": 4,
                 "reps": 15,
                 "description": "Squeeze legs inward for inner thighs",
-                "video_placeholder": "Leg1/Adductor"
+                "video_placeholder": "Leg1/Adductor.gif"
             },
             {
                 "name": "Hip Thrust",
                 "sets": 4,
                 "reps": 15,
                 "description": "Lift hips using glutes and hamstrings",
-                "video_placeholder": "Leg1/HipThrust"
+                "video_placeholder": "Leg1/HipThrust.gif"
             },
             {
                 "name": "Romanian Deadlift",
                 "sets": 4,
                 "reps": 15,
                 "description": "Lower weights with slight bend for hamstrings",
-                "video_placeholder": "Leg1/Deadlift"
+                "video_placeholder": "Leg1/Deadlift.gif"
             },
             {
                 "name": "Goblet Squats",
                 "sets": 4,
                 "reps": 15,
                 "description": "Hold weight and squat for legs and glutes",
-                "video_placeholder": "Leg1/GobletSquats"
+                "video_placeholder": "Leg1/GobletSquats.gif"
             }
         ],
         "is_active": True
@@ -138,35 +138,35 @@ WORKOUT_ROUTINE = {
                 "sets": 4,
                 "reps": 15,
                 "description": "Pull bar to chest to target lats",
-                "video_placeholder": "Pull/Pulldown"
+                "video_placeholder": "Pull/Pulldown.mp4"
             },
             {
                 "name": "Seated Cable Row",
                 "sets": 4,
                 "reps": 15,
                 "description": "Seating, pull cable to waist for mid-back",
-                "video_placeholder": "Pull/CableRow"
+                "video_placeholder": "Pull/CableRow.mp4"
             },
             {
                 "name": "Single-Arm Dumbbell Row",
                 "sets": 4,
                 "reps": 15,
                 "description": "Unilateral dumbbell row for back and lats",
-                "video_placeholder": "Pull/DumbellRow"
+                "video_placeholder": "Pull/DumbellRow.mp4"
             },
             {
                 "name": "Hammer Curls",
                 "sets": 4,
                 "reps": 15,
                 "description": "Neutral grip bicep curls",
-                "video_placeholder": "Pull/Hammers"
+                "video_placeholder": "Pull/Hammers.mp4"
             },
             {
                 "name": "Lying Bicep Curls",
                 "sets": 4,
                 "reps": 15,
                 "description": "Curl weights while lying 45 degrees",
-                "video_placeholder": "Pull/LyingCurls"
+                "video_placeholder": "Pull/LyingCurls.mp4"
             }
         ],
         "is_active": True
@@ -179,28 +179,28 @@ WORKOUT_ROUTINE = {
                 "sets": 4,
                 "reps": 45,
                 "description": "45 sec: hold squat against wall for time",
-                "video_placeholder": "Leg2/WallSit"
+                "video_placeholder": "Leg2/WallSit.jpg"
             },
             {
                 "name": "Donkey Kicks",
                 "sets": 4,
                 "reps": 15,
                 "description": "Kick back while on all fours for glutes",
-                "video_placeholder": "Leg2/DonkeyKicks"
+                "video_placeholder": "Leg2/DonkeyKicks.gif"
             },
             {
-                "name": "Lateral Donkey Kicks",
+                "name": "Cable Side Kicks",
                 "sets": 4,
                 "reps": 15,
                 "description": "Kick leg sideways for hip and glutes",
-                "video_placeholder": "Leg2/LateralDonkeyKicks"
+                "video_placeholder": "Leg2/CableSideKicks.gif"
             },
             {
-                "name": "Standing Calf Raises",
+                "name": "Seated Calf Raises",
                 "sets": 4,
                 "reps": 20,
                 "description": "Raise heels to work calves",
-                "video_placeholder": "Leg2/CalfRaises"
+                "video_placeholder": "Leg2/CalfRaises.jpg"
             }
         ],
         "is_active": True
@@ -213,35 +213,35 @@ WORKOUT_ROUTINE = {
                 "sets": 4,
                 "reps": 15,
                 "description": "Press weight overhead for shoulders",
-                "video_placeholder": "Push/MilitaryPress"
+                "video_placeholder": "Push/MilitaryPress.mp4"
             },
             {
                 "name": "Lateral Raises",
                 "sets": 4,
                 "reps": 15,
                 "description": "Raise dumbells to the side",
-                "video_placeholder": "Push/LateralRaises"
+                "video_placeholder": "Push/LateralRaises.mp4"
             },
             {
                 "name": "Bench Dips",
                 "sets": 4,
                 "reps": 15,
                 "description": "Lower body on bench to hit triceps",
-                "video_placeholder": "Push/BenchDips"
+                "video_placeholder": "Push/BenchDips.mp4"
             },
             {
                 "name": "Cable Rope Pushdown",
                 "sets": 4,
                 "reps": 15,
                 "description": "Tricep pushdown with rope attachment",
-                "video_placeholder": "Push/CablePushdown"
+                "video_placeholder": "Push/CablePushdown.mp4"
             },
             {
                 "name": "Incline Push-ups",
                 "sets": 4,
                 "reps": 10,
                 "description": "Push-ups on postive incline for chest/triceps",
-                "video_placeholder": "Push/InclinePushUps"
+                "video_placeholder": "Push/InclinePushUps.gif"
             }
         ],
         "is_active": True
@@ -254,42 +254,42 @@ WORKOUT_ROUTINE = {
                 "sets": 3,
                 "reps": 50,
                 "description": "Kick your legs alternately while keeping them straight.",
-                "video_placeholder": "Core/FlutterKicks"
+                "video_placeholder": "Core/FlutterKicks.webp"
             },
             {
                 "name": "Leg Raises",
                 "sets": 3,
                 "reps": 12,
                 "description": "Lift your legs to 90 degrees and lower slowly.",
-                "video_placeholder": "Core/LegRaises"
+                "video_placeholder": "Core/LegRaises.mp4"
             },
             {
                 "name": "Crunches",
                 "sets": 3,
                 "reps": 15,
                 "description": "Lift your upper body towards your knees.",
-                "video_placeholder": "Core/Crunches"
+                "video_placeholder": "Core/Crunches.gif"
             },
             {
                 "name": "Sit Ups",
                 "sets": 3,
                 "reps": 15,
                 "description": "Complete sit-ups with full range of motion.",
-                "video_placeholder": "Core/SitUps"
+                "video_placeholder": "Core/SitUps.gif"
             },
             {
-                "name": "Bicycle Kicks",
+                "name": "Bicycle Crunches",
                 "sets": 3,
                 "reps": 40,
                 "description": "Alternate legs like pedaling a bicycle.",
-                "video_placeholder": "Core/BicycleKicks"
+                "video_placeholder": "Core/BicycleCrunches.gif"
             },
             {
                 "name": "Plank",
                 "sets": 2,
                 "reps": 60,
                 "description": "Hold a straight body position on your forearms.",
-                "video_placeholder": "Core/Plank"
+                "video_placeholder": "Core/Plank.webp"
             }
         ],
         "is_active": True
